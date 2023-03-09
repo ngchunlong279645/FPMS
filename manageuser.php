@@ -13,6 +13,7 @@ if (isset($_GET['submit'])) {
         $sqldeleteuser = "DELETE FROM `tbl_users` WHERE user_id = '$user_id'";
         $conn->exec($sqldeleteuser);
         echo "<script>alert('User deleted')</script>";
+        echo "<script>window.location.replace('manageuser.php')</script>";
     }
     if ($operation == 'search') {
         $search = $_GET['search'];
@@ -35,7 +36,9 @@ if (isset($_GET['pageno'])) {
      $pageno = 1;
     $page_first_result = 0;
 }
-$stmt = $conn->prepare($sqluser);
+
+
+$stmt = $conn->prepare($sqluser );
 $stmt->execute();
 $number_of_result = $stmt->rowCount();
 $number_of_page = ceil($number_of_result / $results_per_page);

@@ -53,7 +53,7 @@ if (isset($_GET["status"])) {
         <p>Login Page</p>
     </header>
     <div style="display: flex; justify-content: flex-end">
-    <img src="Optergy-BMS-Applications-900.jpg " style = "width:auto; height:auto;">
+    <img src="pic/Optergy-BMS-Applications-900.jpg " style = "width:auto; height:auto;">
         <div class="w3-card w3-padding w3-margin" style="width:600px;margin:auto;text-align:left;">
             <form action="index.php" method="post">
                 <p>

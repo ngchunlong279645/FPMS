@@ -13,7 +13,7 @@ if (isset($_POST['submit'])) {
     $name = addslashes($_POST['name']); 
     $useremail = addslashes($_POST['email']);
     $password = $_POST['password']; 
-    echo $sqlupdate = "UPDATE `tbl_users` SET `username`='$name',`user_email`='$useremail',`user_password`='$password'
+    $sqlupdate = "UPDATE `tbl_users` SET `username`='$name',`user_email`='$useremail',`user_password`='$password'
     WHERE user_id = '$uid'";
     try {
         $conn->exec( $sqlupdate);

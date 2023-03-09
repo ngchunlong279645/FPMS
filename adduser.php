@@ -11,7 +11,7 @@ if (isset($_POST['submit'])) {
   $useremail = addslashes($_POST['email']);
   $credit = 5;  
   $otp = rand(10000, 99999);
-  $password = sha1($_POST['passworda']); 
+  $password = $_POST['passworda']; 
   $role = ($_POST['role']);
   $userID = generateUserID($role);
   $userID = $conn->quote($userID);

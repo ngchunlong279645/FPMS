@@ -58,7 +58,7 @@ if (!isset($_SESSION['session_id'])) {
         <div>
         <p  class =" w3-center"><a class="add-student-link" href="addInfo.php">Click here to add information</a> </p>
         
-                <img src="lecturer.webp " style = "width:400px; height:350px;">
+                <img src="pic/lecturer.webp " style = "width:400px; height:350px;">
             
         </div>
        
