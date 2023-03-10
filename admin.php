@@ -42,7 +42,7 @@ if (!isset($_SESSION['session_id'])) {
         <div class="w3-bar w3-light-blue">
             <a href="chg.php" class="w3-bar-item w3-button w3-right">Change Password</a>
             <a href="#" class="w3-bar-item w3-button w3-right">Report</a>
-            <a href="#" class="w3-bar-item w3-button w3-right">Manage Project</a>
+            <a href="manageproject.php" class="w3-bar-item w3-button w3-right">Manage Project</a>
             <a href="manageuser.php" class="w3-bar-item w3-button w3-right">Manage User</a>
             <a href="admin.php" class="w3-bar-item w3-button w3-right">Profile</a>
             

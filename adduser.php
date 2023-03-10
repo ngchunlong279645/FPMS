@@ -56,7 +56,7 @@ function generateUserID($role) {
         <a href="manageuser.php" class="w3-bar-item w3-button w3-right">Back</a>
     </div>
     <div class="w3-content w3-padding-32">
-        <form class="w3-card w3-padding" action="adduser.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
+        <form class="w3-card w3-padding " action="adduser.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
         <h1>Add New User</h1>   
 	    <form>
         <div class="w3-row">

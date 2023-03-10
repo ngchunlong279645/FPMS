@@ -81,7 +81,7 @@ if (isset($_GET['submit'])) {
     <div class="w3-content w3-padding-32">
         <form class="w3-card w3-padding" action="updateuser.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
             <div class="w3-container w3-yellow">
-                <h3>User</h3>
+                <h3>User ID : <?php echo $uid ?> </h3>
             </div>
             <hr>
             <input type="hidden" name="uid" value="<?php echo $uid ?>">
@@ -95,7 +95,7 @@ if (isset($_GET['submit'])) {
                 <div class="w3-half" style="padding-right:4px">
                     <p>
                         <label><b>User Role</b></label>
-                        <span class="w3-input w3-border w3-round w3-grey"><?php echo $urole?></span>
+                        <span class="w3-input w3-border w3-round w3-light-grey"><?php echo $urole?></span>
                     </p>
                 </div>
             </div>
