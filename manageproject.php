@@ -23,7 +23,7 @@ if (isset($_GET['submit'])) {
     $sqlprojects = "SELECT * FROM tbl_projects";
 }
 
-$results_per_page = 20;
+$results_per_page = 5;
 if (isset($_GET['pageno'])) {
      $pageno = (int)$_GET['pageno'];
      $page_first_result = ($pageno - 1) * $results_per_page;
@@ -87,12 +87,13 @@ $rows = $stmt->fetchAll();
         </form>
 
     </div>
-    <div class="w3-margin w3-border" style="overflow-x:auto;">
+    <div class="w3-margin w3-border" style="overflow-x:auto ;">
         <?php
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
-         <tr><th style='width:5%'>No</th><th style='width:10%'>Project ID</th><th style='width:10%'>Project Title</th><th style='width:20%'>Requirement</th>
-         <th style='width:10%'>Supervisor</th> <th style='width:20%'>Description</th> <th style='width:10%'>Date of Start</th><th style='width:10%'>Date of End</th><th style='width:10%'>Duration (days)</th><th style='width:10%'>Operations</th></tr>";
+         <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:10%'>Project Title</th><th style='width:20%'>Requirement</th>
+          <th style='width:20%'>Description</th><th style='width:10%'>Supervisor</th> <th style='width:10%'>Date of Start</th>
+          <th style='width:10%'>Date of End</th><th style='width:5%'>Duration (days)</th><th style='width:5%'>Operations</th></tr>";
         foreach ($rows as $projects) {
             $i++;
             $pid = $projects['project_id'];
@@ -105,7 +106,7 @@ $rows = $stmt->fetchAll();
             $pdoe_timestamp = strtotime($pdoe);
             $pdos_timestamp = strtotime($pdos);
             $duration = ceil(($pdoe_timestamp - $pdos_timestamp) / (60 * 60 * 24));
-            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$psupervisor</td><td>$pdescription</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
+            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$psupervisor</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
             <td><button class='btn'><a href='manageproject.php?submit=delete&pid=$pid' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
             <button class='btn'><a href='updateproject.php?submit=details&pid=$pid' class='fa fa-edit'></a></button></td></tr>";
         }

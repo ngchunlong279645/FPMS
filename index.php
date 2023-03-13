@@ -19,6 +19,9 @@ if (isset($_POST['submit'])) {
         } elseif (substr($user_id, 0, 1) == "L") {
             echo "<script> alert('Lecturer login successful')</script>";
             echo "<script> window.location.replace('lecturer.php')</script>";
+        }elseif (substr($user_id, 0, 1) == "S") {
+            echo "<script> alert('Student login successful')</script>";
+            echo "<script> window.location.replace('student.php')</script>";
         }
     } else {
         session_unset();

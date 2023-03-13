@@ -22,19 +22,19 @@ if (isset($_POST['submit'])) {
     $gender = $_POST['gender'];
     $races = $_POST['races'];
     $office = addslashes($_POST['office']);
-    $sqlinsertinfo = "INSERT INTO `tbl_lecturer`(`user_id`, `user_name`, `user_description`, `user_tel`, `user_email`, `user_address`, `user_dateofbirth`, `user_gender`, `user_races`, `user_office`) 
+  echo  $sqlinsertinfo = "INSERT INTO `tbl_lecturer`(`user_id`, `lec_name`, `lec_description`, `lec_tel`, `lec_email`,
+   `lec_address`, `lec_dateofbirth`, `lec_gender`, `lec_races`, `lec_office`) 
     VALUES ('$user_id','$name','$description','$tel','$email','$address','$dob','$gender','$races','$office')";
    try {
       $conn->exec($sqlinsertinfo);
       if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
-        $last_id = $conn->lastInsertId();
-        uploadImage($last_id);
-          echo "<script>alert('Success')</script>";
-          echo "<script>window.location.replace('lecturer.php')</script>";
+        uploadImage($user_id);
+        echo "<script>alert('Success')</script>";
+        echo "<script>window.location.replace('lecturer.php')</script>";
       }
   } catch (PDOException $e) {
-      echo "<script>alert('Failed')</script>";
-      echo "<script>window.location.replace('addInfo.php')</script>";
+  		echo "<script>alert('Failed')</script>";
+     	echo "<script>window.location.replace('updateLecInfo.php')</script>";
   }
   
 }
@@ -147,7 +147,7 @@ function uploadImage($filename)
         <a href="lecturer.php" class="w3-bar-item w3-button w3-right">Back</a>
     </div>
 <div class="w3-content w3-padding-32">
-        <form class="w3-card w3-padding" action="addInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
+        <form class="w3-card w3-padding" action="updateLecInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
                 <h1>Personal Information</h1>
             
 	<form>
@@ -190,8 +190,8 @@ function uploadImage($filename)
       <select class="w3-select w3-border w3-round" id="races"  name="races">
           <option disabled selected>Races</option>
           <option value="Malay">Malay</option>
-          <option value="African">Chinese</option>
-          <option value="Other">Indian</option>
+          <option value="Chinese">Chinese</option>
+          <option value="Indian">Indian</option>
           <option value="Other">Other</option>
 
       <select>
