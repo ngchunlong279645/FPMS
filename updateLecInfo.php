@@ -2,18 +2,20 @@
 session_start();
 $name = $_SESSION["name"];
 include_once("dbconnect.php");
-$sql = "SELECT * FROM tbl_users WHERE username = '$name'";
+$sql = "SELECT * FROM tbl_lecturer WHERE lec_name = '$name'";
 $select_stmt = $conn->prepare($sql);
 $select_stmt->execute();
 $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
 $user_id = $row["user_id"];
+
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
 }
 
 if (isset($_POST['submit'])) {
-    include_once("dbconnect.php");
+	include_once("dbconnect.php");
+	
     $description = addslashes($_POST['description']);
     $tel= $_POST['tel'];
     $address = $_POST['address'];
@@ -22,21 +24,23 @@ if (isset($_POST['submit'])) {
     $gender = $_POST['gender'];
     $races = $_POST['races'];
     $office = addslashes($_POST['office']);
-  echo  $sqlinsertinfo = "INSERT INTO `tbl_lecturer`(`user_id`, `lec_name`, `lec_description`, `lec_tel`, `lec_email`,
-   `lec_address`, `lec_dateofbirth`, `lec_gender`, `lec_races`, `lec_office`) 
-    VALUES ('$user_id','$name','$description','$tel','$email','$address','$dob','$gender','$races','$office')";
+    $sqlupdateInfo = "UPDATE `tbl_lecturer` SET `lec_description`='$description',
+   `lec_tel`='$tel',`lec_email`='$email',`lec_address`='$address',`lec_dateofbirth`='$dob',`lec_gender`='$gender',
+   `lec_races`='$races',`lec_office`='$office' WHERE lec_name = '$name'";
    try {
-      $conn->exec($sqlinsertinfo);
-      if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
-        uploadImage($user_id);
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('lecturer.php')</script>";
-      }
-  } catch (PDOException $e) {
-  		echo "<script>alert('Failed')</script>";
-     	echo "<script>window.location.replace('updateLecInfo.php')</script>";
-  }
-  
+	$conn->exec( $sqlupdateInfo);
+	if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
+		uploadImage($user_id);
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('lecturer.php')</script>";
+	} else {
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('lecturer.php')</script>";
+	}
+} catch (PDOException $e) {
+	echo "<script>alert('Failed')</script>";
+	echo "<script>window.location.replace('updateLecinfo.php?submit=details&user_id=$user_id')</script>";
+}
 }
 
 
@@ -45,6 +49,36 @@ function uploadImage($filename)
     $target_dir = "../user/lecturer/";
     $target_file = $target_dir . $filename . ".png";
     move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
+}
+
+if (isset($_GET['submit'])) {
+    $operation = $_GET['submit'];
+    if ($operation == 'details') {
+        $user_id = $_GET['user_id'];
+        $sqlupdateInfo = "SELECT * FROM tbl_lecturer WHERE user_id = '$user_id'";
+        $stmt = $conn->prepare( $sqlupdateInfo);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        $number_of_rows = $stmt->rowCount();
+        if ($number_of_rows > 0) {
+            foreach ($rows as $lecturer) {
+                $lec_description = $lecturer['lec_description'];
+                $lec_tel = $lecturer['lec_tel'];
+                $lec_email = $lecturer['lec_email'];
+                $lec_address = $lecturer['lec_address'];
+                $lec_dateofbirth = $lecturer['lec_dateofbirth'];
+                $lec_gender = $lecturer['lec_gender'];
+				$lec_races = $lecturer['lec_races'];
+				$lec_office = $lecturer['lec_office'];
+            }
+        }else{
+           echo "<script>alert('No lecturer found')</script>";
+           echo "<script>window.location.replace('lecturer.php')</script>";
+        }
+    }
+}else{
+   echo "<script>alert('Error')</script>";
+   echo "<script>window.location.replace('updateLecInfo.php')</script>";
 }
 
 ?>
@@ -57,7 +91,7 @@ function uploadImage($filename)
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="../login/js/script.js"></script>
-	<title>Personal Information</title>
+	<title>Edit Information</title>
 	<style>
 		body {
 			margin: 0;
@@ -152,8 +186,10 @@ function uploadImage($filename)
             
 	<form>
   <div class="w3-container w3-center">
-                <img class="w3-image w3-margin" src="../login/pic/blank-profile.webp" style="height:100%;width:250px"><br>
+                <img class="w3-image w3-margin" src="../user/lecturer/<?php echo $user_id?>.png" style="height:100%;width:250px"><br>
                 <input type="file" name="fileToUpload" onchange="previewFile()">
+
+				
   </div>
     <hr>
 		<div class="form-group">
@@ -162,43 +198,43 @@ function uploadImage($filename)
 		</div>
 		<div class="form-group">
 			<label for="description">Description:</label>
-			<textarea id="description" name="description"></textarea>
+			<textarea id="description" name="description" required><?php echo $lec_description ?></textarea>
 		</div>
 		<div class="form-group">
 			<label for="tel">Telephone Number:</label>
-			<input type="tel" id="tel" name="tel" required>
+			<input type="tel" id="tel" name="tel"  value="<?php echo $lec_tel ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="address">Address:</label>
-			<input type="text" id="address" name="address" required>
+			<input type="text" id="address" name="address" value="<?php echo $lec_address ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" required>
+			<input type="email" id="email" name="email" value="<?php echo $lec_email ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="dob">Date of Birth:</label>
-			<input type="date" id="dob" name="dob" required>
+			<input type="date" id="dob" name="dob" value="<?php echo $lec_dateofbirth ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="gender">Gender:</label>
-      <input type="radio" id="gender" name="gender" value="Male">Male
-      <input type="radio" id="gender" name="gender" value="Female">Female
-      </div>
-    <div class="form-group">
-      <label for="races">Races:</label>
-      <select class="w3-select w3-border w3-round" id="races"  name="races">
-          <option disabled selected>Races</option>
-          <option value="Malay">Malay</option>
-          <option value="Chinese">Chinese</option>
-          <option value="Indian">Indian</option>
-          <option value="Other">Other</option>
+			<input type="radio" id="gender_male" name="gender" value="Male" <?php if ($lec_gender == "Male") { echo "checked"; } ?>>Male
+			<input type="radio" id="gender_female" name="gender" value="Female" <?php if ($lec_gender == "Female") { echo "checked"; } ?>>Female
+		</div>
+		<div class="form-group">
+		<label for="races">Races:</label>
+		<select class="w3-select w3-border w3-round" id="races" name="races" required>
+			<option disabled selected>Select a race</option>
+			<option value="Malay" <?php if ($lec_races == "Malay") { echo "selected"; } ?>>Malay</option>
+			<option value="Chinese" <?php if ($lec_races == "Chinese") { echo "selected"; } ?>>Chinese</option>
+			<option value="Indian" <?php if ($lec_races == "Indian") { echo "selected"; } ?>>Indian</option>
+			<option value="Other" <?php if ($lec_races == "Other") { echo "selected"; } ?>>Other</option>
+		</select>
+		</div>
 
-      <select>
-    </div>
     <div class="form-group">
 			<label for="office">Office Address:</label>
-      <input type="text" id="office" name="office" required>
+      <input type="text" id="office" name="office" value="<?php echo $lec_office ?>" required>
       </div>
       
       <p>
