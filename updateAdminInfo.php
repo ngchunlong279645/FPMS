@@ -2,7 +2,7 @@
 session_start();
 $name = $_SESSION["name"];
 include_once("dbconnect.php");
-$sql = "SELECT * FROM tbl_lecturer WHERE lec_name = '$name'";
+$sql = "SELECT * FROM tbl_admin WHERE admin_name = '$name'";
 $select_stmt = $conn->prepare($sql);
 $select_stmt->execute();
 $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
@@ -24,29 +24,29 @@ if (isset($_POST['submit'])) {
     $gender = $_POST['gender'];
     $races = $_POST['races'];
     $office = addslashes($_POST['office']);
-    $sqlupdateInfo = "UPDATE `tbl_lecturer` SET `lec_description`='$description',
-   `lec_tel`='$tel',`lec_email`='$email',`lec_address`='$address',`lec_dateofbirth`='$dob',`lec_gender`='$gender',
-   `lec_races`='$races',`lec_office`='$office' WHERE lec_name = '$name'";
+    $sqlupdateAdminInfo = "UPDATE `tbl_admin` SET `admin_description`='$description',
+   `admin_tel`='$tel',`admin_email`='$email',`admin_address`='$address',`admin_dateofbirth`='$dob',`admin_gender`='$gender',
+   `admin_races`='$races',`admin_office`='$office' WHERE admin_name = '$name'";
    try {
-	$conn->exec( $sqlupdateInfo);
+	$conn->exec($sqlupdateAdminInfo);
 	if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
 		uploadImage($user_id);
 		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('lecturer.php')</script>";
+		echo "<script>window.location.replace('admin.php')</script>";
 	} else {
 		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('lecturer.php')</script>";
+		echo "<script>window.location.replace('admin.php')</script>";
 	}
 } catch (PDOException $e) {
 	echo "<script>alert('Failed')</script>";
-	echo "<script>window.location.replace('updateLecInfo.php?submit=details&user_id=$user_id')</script>";
+	echo "<script>window.location.replace('updateAdminInfo.php?submit=details&user_id=$user_id')</script>";
 }
 }
 
 
 function uploadImage($filename)
 {
-    $target_dir = "../user/lecturer/";
+    $target_dir = "../user/admin/";
     $target_file = $target_dir . $filename . ".png";
     move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
 }
@@ -55,30 +55,30 @@ if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'details') {
         $user_id = $_GET['user_id'];
-        $sqlupdateInfo = "SELECT * FROM tbl_lecturer WHERE user_id = '$user_id'";
-        $stmt = $conn->prepare( $sqlupdateInfo);
+        $sqlAdminInfo = "SELECT * FROM tbl_admin WHERE user_id = '$user_id'";
+        $stmt = $conn->prepare( $sqlAdminInfo);
         $stmt->execute();
         $rows = $stmt->fetchAll();
         $number_of_rows = $stmt->rowCount();
         if ($number_of_rows > 0) {
-            foreach ($rows as $lecturer) {
-                $lec_description = $lecturer['lec_description'];
-                $lec_tel = $lecturer['lec_tel'];
-                $lec_email = $lecturer['lec_email'];
-                $lec_address = $lecturer['lec_address'];
-                $lec_dateofbirth = $lecturer['lec_dateofbirth'];
-                $lec_gender = $lecturer['lec_gender'];
-				$lec_races = $lecturer['lec_races'];
-				$lec_office = $lecturer['lec_office'];
+            foreach ($rows as $admin) {
+                $admin_description = $admin['admin_description'];
+                $admin_tel = $admin['admin_tel'];
+                $admin_email = $admin['admin_email'];
+                $admin_address = $admin['admin_address'];
+                $admin_dateofbirth = $admin['admin_dateofbirth'];
+                $admin_gender = $admin['admin_gender'];
+				$admin_races = $admin['admin_races'];
+				$admin_office = $admin['admin_office'];
             }
         }else{
-           echo "<script>alert('No lecturer found')</script>";
-           echo "<script>window.location.replace('lecturer.php')</script>";
+           echo "<script>alert('No admin found')</script>";
+           echo "<script>window.location.replace('admin.php')</script>";
         }
     }
 }else{
    echo "<script>alert('Error')</script>";
-   echo "<script>window.location.replace('updateLecInfo.php')</script>";
+   echo "<script>window.location.replace('updateAdminInfo.php')</script>";
 }
 
 ?>
@@ -178,15 +178,15 @@ if (isset($_GET['submit'])) {
 </head>
 <body>
 <div class="w3-bar w3-grey">
-        <a href="lecturer.php" class="w3-bar-item w3-button w3-right">Back</a>
+        <a href="admin.php" class="w3-bar-item w3-button w3-right">Back</a>
     </div>
 <div class="w3-content w3-padding-32">
-        <form class="w3-card w3-padding" action="updateLecInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
+        <form class="w3-card w3-padding" action="updateAdminInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
                 <h1>Personal Information</h1>
             
 	<form>
   <div class="w3-container w3-center">
-                <img class="w3-image w3-margin" src="../user/lecturer/<?php echo $user_id?>.png" style="height:100%;width:250px"><br>
+                <img class="w3-image w3-margin" src="../user/admin/<?php echo $user_id?>.png" style="height:100%;width:250px"><br>
                 <input type="file" name="fileToUpload" onchange="previewFile()">
 
 				
@@ -198,43 +198,43 @@ if (isset($_GET['submit'])) {
 		</div>
 		<div class="form-group">
 			<label for="description">Description:</label>
-			<textarea id="description" name="description" required><?php echo $lec_description ?></textarea>
+			<textarea id="description" name="description" required><?php echo $admin_description ?></textarea>
 		</div>
 		<div class="form-group">
 			<label for="tel">Telephone Number:</label>
-			<input type="tel" id="tel" name="tel"  value="<?php echo $lec_tel ?>" required>
+			<input type="tel" id="tel" name="tel"  value="<?php echo $admin_tel ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="address">Address:</label>
-			<input type="text" id="address" name="address" value="<?php echo $lec_address ?>" required>
+			<input type="text" id="address" name="address" value="<?php echo $admin_address ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" value="<?php echo $lec_email ?>" required>
+			<input type="email" id="email" name="email" value="<?php echo $admin_email ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="dob">Date of Birth:</label>
-			<input type="date" id="dob" name="dob" value="<?php echo $lec_dateofbirth ?>" required>
+			<input type="date" id="dob" name="dob" value="<?php echo $admin_dateofbirth ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="gender">Gender:</label>
-			<input type="radio" id="gender_male" name="gender" value="Male" <?php if ($lec_gender == "Male") { echo "checked"; } ?>>Male
-			<input type="radio" id="gender_female" name="gender" value="Female" <?php if ($lec_gender == "Female") { echo "checked"; } ?>>Female
+			<input type="radio" id="gender_male" name="gender" value="Male" <?php if ($admin_gender == "Male") { echo "checked"; } ?>>Male
+			<input type="radio" id="gender_female" name="gender" value="Female" <?php if ($admin_gender == "Female") { echo "checked"; } ?>>Female
 		</div>
 		<div class="form-group">
 		<label for="races">Races:</label>
 		<select class="w3-select w3-border w3-round" id="races" name="races" required>
 			<option disabled selected>Select a race</option>
-			<option value="Malay" <?php if ($lec_races == "Malay") { echo "selected"; } ?>>Malay</option>
-			<option value="Chinese" <?php if ($lec_races == "Chinese") { echo "selected"; } ?>>Chinese</option>
-			<option value="Indian" <?php if ($lec_races == "Indian") { echo "selected"; } ?>>Indian</option>
-			<option value="Other" <?php if ($lec_races == "Other") { echo "selected"; } ?>>Other</option>
+			<option value="Malay" <?php if ($admin_races == "Malay") { echo "selected"; } ?>>Malay</option>
+			<option value="Chinese" <?php if ($admin_races == "Chinese") { echo "selected"; } ?>>Chinese</option>
+			<option value="Indian" <?php if ($admin_races == "Indian") { echo "selected"; } ?>>Indian</option>
+			<option value="Other" <?php if ($admin_races == "Other") { echo "selected"; } ?>>Other</option>
 		</select>
 		</div>
 
     <div class="form-group">
 			<label for="office">Office Address:</label>
-      <input type="text" id="office" name="office" value="<?php echo $lec_office ?>" required>
+      <input type="text" id="office" name="office" value="<?php echo $admin_office ?>" required>
       </div>
       
       <p>
