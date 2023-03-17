@@ -4,32 +4,37 @@ $name = $_SESSION["name"];
 if (isset($_POST['submit'])) {
   include 'dbconnect.php';
 
-  $current_password = sha1($_POST['current_password']);
-  $new_password = sha1($_POST['new_password']);
-  $confirm_password =sha1($_POST['confirm_password']); 
+  $current_password = $_POST['current_password'];
+  $new_password = $_POST['new_password'];
+  $confirm_password =$_POST['confirm_password']; 
 
-  $query = "SELECT * FROM tbl_users WHERE username = '$name '";
-  $select_stmt = $conn->prepare($query );
+  $sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+  $select_stmt = $conn->prepare($sql);
   $select_stmt->execute();
   $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
   $user_id = $row["user_id"];
   $user_password= $row["user_password"];
 
   try {
-    $conn->exec( $query);
     if ($current_password == $user_password) {
       if ($new_password == $confirm_password) {
-        $query = "UPDATE tbl_users SET user_password = '$new_password' WHERE user_id = '$user_id'";
+        $sqlpass = "UPDATE tbl_users SET user_password = '$new_password' WHERE user_id = '$user_id'";
+        $conn->exec($sqlpass);
         echo "<script> alert('Password updated successful')</script>";
-        } else {
-          $error_message = 'New password and confirm password do not match.';
-        }
+        if (substr($user_id, 0, 1) == "A") {
+          echo "<script> window.location.replace('admin.php')</script>";
+      } elseif (substr($user_id, 0, 1) == "L") {
+          echo "<script> window.location.replace('lecturer.php')</script>";
+      }elseif (substr($user_id, 0, 1) == "S") {
+          echo "<script> window.location.replace('student.php')</script>";
+      }
+        }$error_message = 'New password and confirm password do not match.';
       } else {
         $error_message = 'Current password is incorrect.';
       }
     } catch (PDOException $e){
         echo "<script>alert('Failed')</script>";
-       echo "<script>window.location.replace('signup.php')</script>";
+       echo "<script>window.location.replace('chgpassword.php')</script>";
     }
 
   
