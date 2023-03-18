@@ -1,20 +1,26 @@
 <?php
 session_start();
 $name = $_SESSION["name"];
-if (isset($_POST['submit'])) {
-  include 'dbconnect.php';
 
-  $current_password = $_POST['current_password'];
-  $new_password = $_POST['new_password'];
-  $confirm_password =$_POST['confirm_password']; 
-
-  $sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+include 'dbconnect.php';
+$sql = "SELECT * FROM tbl_users WHERE username = '$name '";
   $select_stmt = $conn->prepare($sql);
   $select_stmt->execute();
   $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
   $user_id = $row["user_id"];
   $user_password= $row["user_password"];
 
+if (!isset($_SESSION['session_id'])) {
+  echo "<script>alert('Session not available. Please login');</script>";
+  echo "<script> window.location.replace('login.php')</script>";
+}
+
+if (isset($_POST['submit'])) {
+  include 'dbconnect.php';
+
+  $current_password = $_POST['current_password'];
+  $new_password = $_POST['new_password'];
+  $confirm_password =$_POST['confirm_password']; 
   try {
     if ($current_password == $user_password) {
       if ($new_password == $confirm_password) {
@@ -62,7 +68,7 @@ if (isset($_POST['submit'])) {
     }
     h1 {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 35px;
     }
     label {
       font-weight: bold;
@@ -84,21 +90,31 @@ if (isset($_POST['submit'])) {
       color: red;
       text-align: center;
     }
+
+    .back-button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+  .back-button:hover {
+    background-color: #d32f2f;
+      }
   </style>
 </head>
 <body>
-<a href="lecturer.php" class="w3-bar-item w3-button w3-right">Back</a>
+<a href="<?php echo (substr($user_id, 0, 1) == "A") ? 'admin.php' : ((substr($user_id, 0, 1) == "L") ? 'lecturer.php' : 'student.php'); ?>" class="button w3-right back-button">Back</a>
 <header class="w3-header w3-blue w3-center w3-padding-32 ">
     <h1>FINAL PROJECT MANAGEMENT SYSTEM</h1>
 </header>
-<div class="w3-blue">
-        <div class="w3-bar w3-light-blue">
-            <a href="chg.php" class="w3-bar-item w3-button w3-right">Change Password</a>
-            <a href="student.php" class="w3-bar-item w3-button w3-right">Student</a>
-            <a href="lecturer.php" class="w3-bar-item w3-button w3-right">Profile</a>
-            
-        </div>
-</div>
   <div class="container">
     <h1>Change Password</h1>
     <?php if (isset($error_message)) { ?>

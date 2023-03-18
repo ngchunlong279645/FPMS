@@ -252,13 +252,5 @@ if ($select_stmt->rowCount() > 0) {
 </body>
 
 </html>
-    
-
-
-    <footer class="w3-footer w3-center w3-bottom w3-light-blue">FPMS</footer>
-
-</body>
-
-</html>
 
 
