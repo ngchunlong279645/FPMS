@@ -12,12 +12,12 @@ if (isset($_POST['submit'])) {
     $pid = $_POST['pid'];
     $project_title = addslashes($_POST['title']); 
     $project_requirement = addslashes($_POST['requirement']);
-    $project_supervisor = addslashes($_POST['supervisor']);
+    $project_client = addslashes($_POST['client']);
     $project_description = addslashes($_POST['description']);
     $project_start = addslashes($_POST['start']);
     $project_end = addslashes($_POST['end']);
    $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`=' $project_title',`project_requirement`='$project_requirement',
-    `project_supervisor`='$project_supervisor',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end'
+    `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end'
     WHERE project_id = '$pid'";
     try {
         $conn->exec($sqlupdateP);
@@ -42,7 +42,7 @@ if (isset($_GET['submit'])) {
             foreach ($rows as $projects) {
                 $ptitle = $projects['project_title'];
                 $prequirement = $projects['project_requirement'];
-                $psupervisor = $projects['project_supervisor'];
+                $pclient = $projects['project_client'];
                 $pdescription = $projects['project_description'];
                 $pstart = $projects['project_start'];
                 $pend = $projects['project_end'];
@@ -99,8 +99,8 @@ if (isset($_GET['submit'])) {
                 </div>
                 <div class="w3-half" style="padding-right:4px">
                     <p>
-                        <label><b>Project Supervisor</b></label>
-                        <input class="w3-input w3-border w3-round"  name="supervisor" type="text" value="<?php echo $psupervisor ?>" required>
+                        <label><b>Project Client</b></label>
+                        <input class="w3-input w3-border w3-round"  name="client" type="text" value="<?php echo $pclient ?>" required>
                     </p>
                 </div>
             </div>

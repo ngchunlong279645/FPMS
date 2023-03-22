@@ -85,6 +85,7 @@ function generateUserID($role) {
                 <option value="Lecturer">Lecturer</option>
                 <option value="Admin">Admin</option>
                 <option value="Student">Student</option>
+                <option value="Client">Client</option>
               </select>
             </p>
           </div>

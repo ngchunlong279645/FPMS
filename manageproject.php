@@ -92,21 +92,21 @@ $rows = $stmt->fetchAll();
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
          <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:10%'>Project Title</th><th style='width:20%'>Requirement</th>
-          <th style='width:20%'>Description</th><th style='width:10%'>Supervisor</th> <th style='width:10%'>Date of Start</th>
+          <th style='width:20%'>Description</th><th style='width:10%'>Client</th> <th style='width:10%'>Date of Start</th>
           <th style='width:10%'>Date of End</th><th style='width:5%'>Duration (days)</th><th style='width:5%'>Operations</th></tr>";
         foreach ($rows as $projects) {
             $i++;
             $pid = $projects['project_id'];
             $ptitle = $projects['project_title'];
             $prequirement = $projects['project_requirement'];
-            $psupervisor = $projects['project_supervisor'];
+            $pclient = $projects['project_client'];
             $pdescription = $projects['project_description'];
             $pdos = $projects['project_start'];
             $pdoe = $projects['project_end'];
             $pdoe_timestamp = strtotime($pdoe);
             $pdos_timestamp = strtotime($pdos);
             $duration = ceil(($pdoe_timestamp - $pdos_timestamp) / (60 * 60 * 24));
-            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$psupervisor</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
+            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$pclient</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
             <td><button class='btn'><a href='manageproject.php?submit=delete&pid=$pid' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
             <button class='btn'><a href='updateproject.php?submit=details&pid=$pid' class='fa fa-edit'></a></button></td></tr>";
         }

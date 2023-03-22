@@ -4,28 +4,74 @@ if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
 }
+
 include_once("dbconnect.php");
+
+$sqlstd = "SELECT * FROM `tbl_class`"; // default value
+
+if (isset($_POST['submit'])) {
+    include_once("dbconnect.php");
+    $matric = $_POST['matric'];
+    try {
+        // Retrieve student name using matric number
+        $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = :matric";
+        $stmt = $conn->prepare($sqlgetname);
+        $stmt->bindParam(':matric', $matric);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $std_name = $row['std_name'];
+        
+        // Insert matric number and student name into tbl_class
+        $sqladdStd = "INSERT INTO `tbl_class`(`std_matric`, `std_name`) VALUES (:matric, :std_name)";
+        
+        // Check if the project exists and has a project title and client name
+        $sqlcheckproject = "SELECT `project_title`, `project_client` FROM `tbl_projects` WHERE `std_name` = :std_name";
+        $stmt = $conn->prepare($sqlcheckproject);
+        $stmt->bindParam(':std_name', $std_name);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // If the project exists, insert project title and client name into tbl_class
+        if ($row) {
+            $project_title = $row['project_title'];
+            $project_client = $row['project_client'];
+            $sqladdStd = "INSERT INTO `tbl_class`(`std_matric`, `std_name`, `project_title`, `client_name`) 
+                          VALUES (:matric, :std_name, :project_title, :project_client)";
+        }
+        
+        $stmt = $conn->prepare($sqladdStd);
+        $stmt->bindParam(':matric', $matric);
+        $stmt->bindParam(':std_name', $std_name);
+        if (isset($project_title) && isset($project_client)) {
+            $stmt->bindParam(':project_title', $project_title);
+            $stmt->bindParam(':project_client', $project_client);
+        }
+        $stmt->execute();
+        echo "<script>alert('Success')</script>";
+        echo "<script>window.location.replace('managestudent.php')</script>";
+    } catch (PDOException $e) {
+        echo "<script>alert('Failed')</script>";
+        echo "<script>window.location.replace('managestudent.php')</script>";
+    }
+}
+
+
+
+
 
 if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'delete') {
-        $user_id = $_GET['uid'];
-        $sqldeleteuser = "DELETE FROM `tbl_users` WHERE user_id = '$user_id'";
-        $conn->exec($sqldeleteuser);
-        echo "<script>alert('User deleted')</script>";
-        echo "<script>window.location.replace('manageuser.php')</script>";
+        $matric = $_GET['matric'];
+        $sqldeleteStd = "DELETE FROM `tbl_class` WHERE std_matric = '$matric'";
+        $conn->exec($sqldeleteStd);
+        echo "<script>alert('Student deleted')</script>";
+        echo "<script>window.location.replace('managestudent.php')</script>";
     }
     if ($operation == 'search') {
         $search = $_GET['search'];
-        $option = $_GET['option'];
-        if ($option == "Select") {
-            $sqluser = "SELECT * FROM tbl_users WHERE username LIKE '%$search%'";
-        } else {
-            $sqluser = "SELECT * FROM tbl_users WHERE user_role = '$option'";
-        }
+        $sqlstd = "SELECT * FROM tbl_class WHERE std_name LIKE '%$search%'";
     }
-} else {
-    $sqluser = "SELECT * FROM tbl_users";
 }
 
 $results_per_page = 20;
@@ -38,17 +84,18 @@ if (isset($_GET['pageno'])) {
 }
 
 
-$stmt = $conn->prepare($sqluser );
+$stmt = $conn->prepare($sqlstd);
 $stmt->execute();
 $number_of_result = $stmt->rowCount();
 $number_of_page = ceil($number_of_result / $results_per_page);
-$sqluser = $sqluser. " LIMIT $page_first_result , $results_per_page";
-$stmt = $conn->prepare($sqluser);
+$sqlstd = $sqlstd. " LIMIT $page_first_result , $results_per_page";
+$stmt = $conn->prepare($sqlstd);
 $stmt->execute();
 $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
 $rows = $stmt->fetchAll();
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,31 +111,62 @@ $rows = $stmt->fetchAll();
     <title>Welcome to Final Project Management System</title>
 </head>
 
+<style>
+       .add-student-btn {
+      background-color: green;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .popup-page {
+      display: none;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    .popup-page-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .close-popup-page {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    </style>
+
 <body>
     <div class="w3-grey">
     <a href="lecturer.php" class="w3-bar-item w3-button w3-right">Back</a>
         <div class="w3-container">
-            <h3>Manage User</h3>
+            <h3>Manage Student</h3>
         </div>
     </div>
-    <div class="w3-bar w3-grey">
-        <a href="adduser.php" class="w3-bar-item w3-button w3-right">Add User</a>
+    <div class="w3-bar w3-grey">  
+        <a class="add-student-btn w3-bar-item w3-button w3-right"  href="#">Add Student</a>
     </div>
     <div class="w3-card w3-container w3-padding w3-margin w3-round">
-        <h3>User Search</h3>
+        <h3>Student Search</h3>
         <form>
             <div class="w3-row">
                 <div class="w3-half" style="padding-right:4px">
                     <p><input class="w3-input w3-block w3-round w3-border" type="search" name="search" placeholder="Enter search term" /></p>
-                </div>
-                <div class="w3-half" style="padding-right:4px">
-                    <p> <select class="w3-input w3-block w3-round w3-border" name="option">
-                            <option value="Select" selected>Select</option>
-                            <option value="lecturer">lecturer</option>
-                            <option value="admin">admin</option>
-                            <option value="student">student</option>
-                        </select>
-                    </p>
                 </div>
             </div>
             <button class="w3-button w3-grey w3-round w3-right" type="submit" name="submit" value="search">search</button>
@@ -99,20 +177,16 @@ $rows = $stmt->fetchAll();
         <?php
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
-         <tr><th style='width:5%'>No</th><th style='width:10%'>User Role</th><th style='width:10%'>User Id</th><th style='width:20%'>Username</th>
-         <th style='width:30%'>Password</th> <th style='width:30%'>Email</th><th>Date of Register</th><th>Operations</th></tr>";
-        foreach ($rows as $users) {
+         <tr><th style='width:5%'>No</th><th style='width:10%'>Matric No.</th><th style='width:20%'>Student Name</th><th style='width:30%'>Project Title</th><th style='width:30%'>Client Name</th>
+        <th style='width:5%'>Operations</th></tr>";
+        foreach ($rows as $class) {
             $i++;
-            $urole = $users['user_role'];
-            $uid = $users['user_id'];
-            $uname = $users['username'];
-            $upass = $users['user_password'];
-            $uemail = $users['user_email'];
-            $uotp = $users['user_otp'];
-            $udor = $users['user_datereg'];
-            echo "<tr><td>$i</td><td>$urole</td><td>$uid</td><td>$uname</td><td>$upass</td><td>$uemail</td><td>$udor</td>
-            <td><button class='btn'><a href='manageuser.php?submit=delete&uid=$uid' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
-            <button class='btn'><a href='updateuser.php?submit=details&uid=$uid' class='fa fa-edit'></a></button></td></tr>";
+            $std_matric = $class['std_matric'];
+            $std_name = $class['std_name'];
+            $project_title = $class['project_title'];
+            $client_name = $class['client_name'];
+            echo "<tr><td>$i</td><td>$std_matric</td><td>$std_name</td><td>$project_title</td><td>$client_name</td>
+            <td><button class='btn'><a href='managestudent.php?submit=delete&matric=$std_matric' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>";
         }
         echo "</table>";
         ?>
@@ -130,7 +204,7 @@ $rows = $stmt->fetchAll();
         echo "<div class='w3-container w3-row'>";
         echo "<center>";
         for ($page = 1; $page <= $number_of_page; $page++) {
-            echo '<a href = "manageuser.php?pageno=' . $page . '" style=
+            echo '<a href = "managestudent.php?pageno=' . $page . '" style=
             "text-decoration: none">&nbsp&nbsp' . $page . ' </a>';
         }
         echo " ( " . $pageno . " )";
@@ -141,6 +215,30 @@ $rows = $stmt->fetchAll();
 
 <footer class="w3-footer w3-center w3-bottom w3-grey">FPMS</footer>
 
-</body>
+<div class="popup-page">
+    <div class="popup-page-content">
+    <span class="close-popup-page">&times;</span>
+        <form action="managestudent.php" method="POST">
+        <label for="matric-number">Matric Number:</label>
+        <input type="text" name="matric" id="matric">
+        <input type="submit" name="submit" value="submit">
+        </form>
+    </div>
+  </div>
 
+  <script>
+    const addStudentBtn = document.querySelector('.add-student-btn');
+    const popupPage = document.querySelector('.popup-page');
+    const closePopupPage = document.querySelector('.close-popup-page');
+
+    addStudentBtn.addEventListener('click', function(event) {
+      event.preventDefault();
+      popupPage.style.display = 'block';
+    });
+
+    closePopupPage.addEventListener('click', function() {
+      popupPage.style.display = 'none';
+    });
+  </script>
+  </body>
 </html>

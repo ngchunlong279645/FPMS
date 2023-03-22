@@ -8,41 +8,38 @@ if (!isset($_SESSION['session_id'])) {
     echo "<script> window.location.replace('index.php')</script>";
     
 }
-$sqlstudent = "SELECT * FROM tbl_student WHERE std_name = '$name'";
-$select_stmt = $conn->prepare($sqlstudent);
+$sqlclient = "SELECT * FROM tbl_client WHERE client_name = '$name'";
+$select_stmt = $conn->prepare($sqlclient);
 $select_stmt->execute();
 
 if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'delete') {
         $user_id = $_GET['user_id'];
-        $sqldeletestdinfo = "DELETE FROM `tbl_student` WHERE user_id = '$user_id'";
-        $conn->exec($sqldeletestdinfo);
+        $sqldeleteclientinfo = "DELETE FROM `tbl_client` WHERE user_id = '$user_id'";
+        $conn->exec($sqldeleteclientinfo);
         echo "<script>alert('Info deleted')</script>";
-        echo "<script>window.location.replace('student.php')</script>";
+        echo "<script>window.location.replace('client.php')</script>";
     }
 } else {
-    $sqlstudent = "SELECT * FROM tbl_student";
+    $sqlclient = "SELECT * FROM tbl_client";
 }
 
 if ($select_stmt->rowCount() > 0) {
     // user information is available in the database
     $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
     $user_id = $row['user_id'];
-    $matric = $row['std_matric'];
-    $description = $row['std_description'];
-    $tel = $row['std_tel'];
-    $email = $row['std_email'];
-    $address = $row['std_address'];
-    $dob = $row['std_dateofbirth'];
-    $gender = $row['std_gender'];
-    $race = $row['std_races'];
-	$course= $row['std_course'];
-
+    $description = $row['client_description'];
+    $tel = $row['client_tel'];
+    $email = $row['client_email'];
+    $address = $row['client_address'];
+    $dob = $row['client_dateofbirth'];
+    $gender = $row['client_gender'];
+    $race = $row['client_races'];
+    $office = $row['client_office'];
 } else {
     // user information is not available in the database
 
-    $matric = "";
     $description = "";
     $tel = "";
     $email = "";
@@ -50,8 +47,7 @@ if ($select_stmt->rowCount() > 0) {
     $dob = "";
     $gender = "";
     $race = "";
-	$course = "";
-
+    $office = "";
 }
 
 ?>
@@ -205,21 +201,21 @@ if ($select_stmt->rowCount() > 0) {
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
-            <a href="#" class="w3-bar-item w3-button w3-right">Dashboard</a>
-            <a href="#" class="w3-bar-item w3-button w3-right">Project Status</a>
-            <a href="student.php" class="w3-bar-item w3-button w3-right">Profile</a>
+            <a href="#" class="w3-bar-item w3-button w3-right">Manage Project</a>
+            <a href="client.php" class="w3-bar-item w3-button w3-right">Profile</a>
+            
         </div>
     </div>
     <div>
     <h2><?php echo "Welcome $name" ?></h2>
     <div class="profile-container">
   <div class="profile-image"> 
-  <img src="../user/student/<?php echo $user_id?>.png" onerror="this.onerror=null;this.src='pic/lecturer.webp'" >
+  <img src="../user/client/<?php echo $user_id?>.png" onerror="this.onerror=null;this.src='pic/lecturer.webp'" >
   </div>
   <div class="profile-info">
     <?php if ($select_stmt->rowCount() >0): ?>
       <div class="profile-details">
-        <p><strong>Matric Number:</strong> <?php echo $matric; ?></p>
+        <p><strong>User ID:</strong> <?php echo $user_id; ?></p>
         <p><strong>Description:</strong> <?php echo $description; ?></p>
         <p><strong>Telephone:</strong> <?php echo $tel; ?></p>
         <p><strong>Email:</strong> <?php echo $email; ?></p>
@@ -227,13 +223,13 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Date of Birth:</strong> <?php echo $dob; ?></p>
         <p><strong>Gender:</strong> <?php echo $gender; ?></p>
         <p><strong>Race:</strong> <?php echo $race; ?></p>
-		<p><strong>Course:</strong> <?php echo $course; ?></p>
-        <a href="updateStdInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
-        <a href="student.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
+        <p><strong>Office:</strong> <?php echo $office; ?></p>
+        <a href="updateClientInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
+        <a href="client.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
       
       </div>
     <?php else: ?>
-      <p>You haven't filled in your information yet. Click <a class="add-info-link" href="addStdInfo.php">here</a> to fill it in.</p>
+      <p>You haven't filled in your information yet. Click <a class="add-info-link" href="addClientInfo.php">here</a> to fill it in.</p>
     <?php endif; ?>
   </div>
   <div class="profile-calendar">
@@ -244,12 +240,12 @@ if ($select_stmt->rowCount() > 0) {
 </body>
 </html>
 
-</div>
+    </div>
 
 
+    
 
-
-<footer class="w3-footer w3-center w3-bottom w3-light-blue">FPMS</footer>
+    <footer class="w3-footer w3-center w3-bottom w3-light-blue">FPMS</footer>
 
 </body>
 

@@ -2,7 +2,7 @@
 session_start();
 $name = $_SESSION["name"];
 include_once("dbconnect.php");
-$sql = "SELECT * FROM tbl_student WHERE std_name = '$name'";
+$sql = "SELECT * FROM tbl_client WHERE client_name = '$name'";
 $select_stmt = $conn->prepare($sql);
 $select_stmt->execute();
 $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
@@ -15,7 +15,7 @@ if (!isset($_SESSION['session_id'])) {
 
 if (isset($_POST['submit'])) {
 	include_once("dbconnect.php");
-	$matric= $_POST['matric'];
+	
     $description = addslashes($_POST['description']);
     $tel= $_POST['tel'];
     $address = $_POST['address'];
@@ -23,30 +23,30 @@ if (isset($_POST['submit'])) {
     $dob = addslashes($_POST['dob']);
     $gender = $_POST['gender'];
     $races = $_POST['races'];
-    $course = addslashes($_POST['course']);
-    $sqlupdateInfo = "UPDATE `tbl_student` SET `std_matric`='$matric',`std_description`='$description',
-   `std_tel`='$tel',`std_email`='$email',`std_address`='$address',`std_dateofbirth`='$dob',`std_gender`='$gender',
-   `std_races`='$races',`std_course`='$course' WHERE std_name = '$name'";
+    $office = addslashes($_POST['office']);
+    $sqlupdateClientInfo = "UPDATE `tbl_client` SET `client_description`='$description',
+   `client_tel`='$tel',`client_email`='$email',`client_address`='$address',`client_dateofbirth`='$dob',`client_gender`='$gender',
+   `client_races`='$races',`client_office`='$office' WHERE client_name = '$name'";
    try {
-	$conn->exec( $sqlupdateInfo);
+	$conn->exec($sqlupdateClientInfo);
 	if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
 		uploadImage($user_id);
 		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('student.php')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
 	} else {
 		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('student.php')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
 	}
 } catch (PDOException $e) {
 	echo "<script>alert('Failed')</script>";
-	echo "<script>window.location.replace('updateStdInfo.php?submit=details&user_id=$user_id')</script>";
+	echo "<script>window.location.replace('updateClientInfo.php?submit=details&user_id=$user_id')</script>";
 }
 }
 
 
 function uploadImage($filename)
 {
-    $target_dir = "../user/student/";
+    $target_dir = "../user/client/";
     $target_file = $target_dir . $filename . ".png";
     move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
 }
@@ -55,31 +55,30 @@ if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'details') {
         $user_id = $_GET['user_id'];
-        $sqlupdateInfo = "SELECT * FROM tbl_student WHERE user_id = '$user_id'";
-        $stmt = $conn->prepare( $sqlupdateInfo);
+        $sqlClientInfo = "SELECT * FROM tbl_client WHERE user_id = '$user_id'";
+        $stmt = $conn->prepare( $sqlClientInfo);
         $stmt->execute();
         $rows = $stmt->fetchAll();
         $number_of_rows = $stmt->rowCount();
         if ($number_of_rows > 0) {
-            foreach ($rows as $student) {
-				$student_matric = $student['std_matric'];
-                $student_description = $student['std_description'];
-                $student_tel = $student['std_tel'];
-                $student_email = $student['std_email'];
-                $student_address = $student['std_address'];
-                $student_dateofbirth = $student['std_dateofbirth'];
-                $student_gender = $student['std_gender'];
-				$student_races = $student['std_races'];
-				$student_course = $student['std_course'];
+            foreach ($rows as $client) {
+                $client_description = $client['client_description'];
+                $client_tel = $client['client_tel'];
+                $client_email = $client['client_email'];
+                $client_address = $client['client_address'];
+                $client_dateofbirth = $client['client_dateofbirth'];
+                $client_gender = $client['client_gender'];
+				$client_races = $client['client_races'];
+				$client_office = $client['client_office'];
             }
         }else{
-           echo "<script>alert('No student found')</script>";
-           echo "<script>window.location.replace('student.php')</script>";
+           echo "<script>alert('No client found')</script>";
+           echo "<script>window.location.replace('client.php')</script>";
         }
     }
 }else{
    echo "<script>alert('Error')</script>";
-   echo "<script>window.location.replace('updateStdInfo.php')</script>";
+   echo "<script>window.location.replace('updateClientInfo.php')</script>";
 }
 
 ?>
@@ -179,15 +178,15 @@ if (isset($_GET['submit'])) {
 </head>
 <body>
 <div class="w3-bar w3-grey">
-        <a href="student.php" class="w3-bar-item w3-button w3-right">Back</a>
+        <a href="client.php" class="w3-bar-item w3-button w3-right">Back</a>
     </div>
 <div class="w3-content w3-padding-32">
-        <form class="w3-card w3-padding" action="updateStdInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
+        <form class="w3-card w3-padding" action="updateClientInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
                 <h1>Personal Information</h1>
             
 	<form>
   <div class="w3-container w3-center">
-                <img class="w3-image w3-margin" src="../user/student/<?php echo $user_id?>.png" style="height:100%;width:250px"><br>
+                <img class="w3-image w3-margin" src="../user/client/<?php echo $user_id?>.png" style="height:100%;width:250px"><br>
                 <input type="file" name="fileToUpload" onchange="previewFile()">
 
 				
@@ -198,53 +197,45 @@ if (isset($_GET['submit'])) {
 			<?php echo " $name" ?> 
 		</div>
 		<div class="form-group">
-			<label for="name">Matric Number:</label>
-			<input type="text" id="matric" name="matric" value="<?php echo $student_matric ?>" required>
-		</div>
-		<div class="form-group">
 			<label for="description">Description:</label>
-			<textarea id="description" name="description" required><?php echo $student_description ?></textarea>
+			<textarea id="description" name="description" required><?php echo $client_description ?></textarea>
 		</div>
 		<div class="form-group">
 			<label for="tel">Telephone Number:</label>
-			<input type="tel" id="tel" name="tel"  value="<?php echo $student_tel ?>" required>
+			<input type="tel" id="tel" name="tel"  value="<?php echo $client_tel ?>" required>
 		</div>
 		<div class="form-group">
-			<label for="address">Home Address:</label>
-			<input type="text" id="address" name="address" value="<?php echo $student_address ?>" required>
+			<label for="address">Address:</label>
+			<input type="text" id="address" name="address" value="<?php echo $client_address ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" value="<?php echo $student_email ?>" required>
+			<input type="email" id="email" name="email" value="<?php echo $client_email ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="dob">Date of Birth:</label>
-			<input type="date" id="dob" name="dob" value="<?php echo $student_dateofbirth ?>" required>
+			<input type="date" id="dob" name="dob" value="<?php echo $client_dateofbirth ?>" required>
 		</div>
 		<div class="form-group">
 			<label for="gender">Gender:</label>
-			<input type="radio" id="gender_male" name="gender" value="Male" <?php if ($student_gender == "Male") { echo "checked"; } ?>>Male
-			<input type="radio" id="gender_female" name="gender" value="Female" <?php if ($student_gender == "Female") { echo "checked"; } ?>>Female
+			<input type="radio" id="gender_male" name="gender" value="Male" <?php if ($client_gender == "Male") { echo "checked"; } ?>>Male
+			<input type="radio" id="gender_female" name="gender" value="Female" <?php if ($client_gender == "Female") { echo "checked"; } ?>>Female
 		</div>
 		<div class="form-group">
 		<label for="races">Races:</label>
 		<select class="w3-select w3-border w3-round" id="races" name="races" required>
 			<option disabled selected>Select a race</option>
-			<option value="Malay" <?php if ($student_races == "Malay") { echo "selected"; } ?>>Malay</option>
-			<option value="Chinese" <?php if ($student_races == "Chinese") { echo "selected"; } ?>>Chinese</option>
-			<option value="Indian" <?php if ($student_races == "Indian") { echo "selected"; } ?>>Indian</option>
-			<option value="Other" <?php if ($student_races == "Other") { echo "selected"; } ?>>Other</option>
+			<option value="Malay" <?php if ($client_races == "Malay") { echo "selected"; } ?>>Malay</option>
+			<option value="Chinese" <?php if ($client_races == "Chinese") { echo "selected"; } ?>>Chinese</option>
+			<option value="Indian" <?php if ($client_races == "Indian") { echo "selected"; } ?>>Indian</option>
+			<option value="Other" <?php if ($client_races == "Other") { echo "selected"; } ?>>Other</option>
 		</select>
 		</div>
 
-        <div class="form-group">
-		<label for="races">Course:</label>
-		<select class="w3-select w3-border w3-round" id="course" name="course" required>
-			<option disabled selected>Select a course</option>
-			<option value="Information Technology" <?php if ($student_course == "Information Technology") { echo "selected"; } ?>>Information Technology</option>
-			<option value="Computer Science" <?php if ($student_course == "Computer Science") { echo "selected"; } ?>>Computer Science</option>
-		</select>
-		</div>
+    <div class="form-group">
+			<label for="office">Office Address:</label>
+      <input type="text" id="office" name="office" value="<?php echo $client_office ?>" required>
+      </div>
       
       <p>
          <input class="w3-button w3-blue w3-round w3-block w3-border" type="submit" name="submit" value="Save">

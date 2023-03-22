@@ -7,7 +7,6 @@ $select_stmt = $conn->prepare($sql);
 $select_stmt->execute();
 $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
 $user_id = $row["user_id"];
-$user_email = $row["user_email"];
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
@@ -15,7 +14,6 @@ if (!isset($_SESSION['session_id'])) {
 
 if (isset($_POST['submit'])) {
     include_once("dbconnect.php");
-	$matric= $_POST['matric'];
     $description = addslashes($_POST['description']);
     $tel= $_POST['tel'];
     $address = $_POST['address'];
@@ -23,30 +21,28 @@ if (isset($_POST['submit'])) {
     $dob = addslashes($_POST['dob']);
     $gender = $_POST['gender'];
     $races = $_POST['races'];
-    $course = addslashes($_POST['course']);
-    $sqlinsertinfo = "INSERT INTO `tbl_student`(`user_id`, `std_name`, `std_matric`,`std_description`, `std_tel`, `std_email`, `std_address`, 
-    `std_dateofbirth`, `std_gender`, `std_races`, `std_course`) VALUES ('$user_id','$name','$matric','$description',
-    '$tel','$email','$address','$dob','$gender','$races','$course')";
+    $office = addslashes($_POST['office']);
+   echo  $sqlinsertClientinfo = "INSERT INTO `tbl_client`(`user_id`, `client_name`, `client_description`, `client_tel`, `client_email`,
+   `client_address`, `client_dateofbirth`, `client_gender`, `client_races`, `client_office`) 
+    VALUES ('$user_id','$name','$description','$tel','$email','$address','$dob','$gender','$races','$office')";
    try {
-	$conn->exec( $sqlinsertinfo);
-	if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
-		uploadImage($user_id);
-		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('student.php')</script>";
-	} else {
-		echo "<script>alert('Success')</script>";
-		echo "<script>window.location.replace('student.php')</script>";
-	}
-} catch (PDOException $e) {
-	echo "<script>alert('Failed')</script>";
-	echo "<script>window.location.replace('updateStdInfo.php?submit=details&user_id=$user_id')</script>";
-}
+      $conn->exec($sqlinsertClientinfo);
+      if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
+        uploadImage($user_id);
+        echo "<script>alert('Success')</script>";
+        echo "<script>window.location.replace('client.php')</script>";
+      }
+  } catch (PDOException $e) {
+  		echo "<script>alert('Failed')</script>";
+     	echo "<script>window.location.replace('addClientInfo.php')</script>";
+  }
+  
 }
 
 
 function uploadImage($filename)
 {
-    $target_dir = "../user/student/";
+    $target_dir = "../user/client/";
     $target_file = $target_dir . $filename . ".png";
     move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
 }
@@ -148,10 +144,10 @@ function uploadImage($filename)
 </head>
 <body>
 <div class="w3-bar w3-grey">
-        <a href="student.php" class="w3-bar-item w3-button w3-right">Back</a>
+        <a href="client.php" class="w3-bar-item w3-button w3-right">Back</a>
     </div>
 <div class="w3-content w3-padding-32">
-        <form class="w3-card w3-padding" action="addStdInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
+        <form class="w3-card w3-padding" action="addClientInfo.php" method="post" enctype="multipart/form-data" onsubmit="return confirm('Are you sure?')">
                 <h1>Personal Information</h1>
             
 	<form>
@@ -165,10 +161,6 @@ function uploadImage($filename)
 			<?php echo " $name" ?> 
 		</div>
 		<div class="form-group">
-			<label for="name">Matric Number:</label>
-			<input type="text" id="matric" name="matric" required>
-		</div>
-		<div class="form-group">
 			<label for="description">Description:</label>
 			<textarea id="description" name="description"></textarea>
 		</div>
@@ -177,12 +169,12 @@ function uploadImage($filename)
 			<input type="tel" id="tel" name="tel" required>
 		</div>
 		<div class="form-group">
-			<label for="address">Home Address:</label>
+			<label for="address">Address:</label>
 			<input type="text" id="address" name="address" required>
 		</div>
 		<div class="form-group">
 			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" value="<?php echo "$user_email" ?> " required>
+			<input type="email" id="email" name="email" required>
 		</div>
 		<div class="form-group">
 			<label for="dob">Date of Birth:</label>
@@ -196,7 +188,7 @@ function uploadImage($filename)
     <div class="form-group">
       <label for="races">Races:</label>
       <select class="w3-select w3-border w3-round" id="races"  name="races">
-          <option disabled selected>Select a races</option>
+          <option disabled selected>Races</option>
           <option value="Malay">Malay</option>
           <option value="Chinese">Chinese</option>
           <option value="Indian">Indian</option>
@@ -204,14 +196,10 @@ function uploadImage($filename)
 
       <select>
     </div>
-      <div class="form-group">
-      <label for="races">Course:</label>
-      <select class="w3-select w3-border w3-round" id="course"  name="course">
-          <option disabled selected>Select a course</option>
-          <option value="Information Technology">Information Technology</option>
-          <option value="Computer Science">Computer Science</option>
-      <select>
-    </div>
+    <div class="form-group">
+			<label for="office">Office Address:</label>
+      <input type="text" id="office" name="office" required>
+      </div>
       
       <p>
          <input class="w3-button w3-blue w3-round w3-block w3-border" type="submit" name="submit" value="Save">

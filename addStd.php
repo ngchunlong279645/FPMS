@@ -7,7 +7,7 @@ if (!isset($_SESSION['session_id'])) {
 
 if (isset($_POST['submit'])) {
   include_once("dbconnect.php");
-  $project_id = rand(10000, 99999);
+
   $project_title = addslashes($_POST['title']); 
   $project_requirement = addslashes($_POST['requirement']);
   $project_client = addslashes($_POST['client']);
