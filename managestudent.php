@@ -1,33 +1,67 @@
 <?php
 session_start();
+$name = $_SESSION["name"];
+
+include_once("dbconnect.php");
+$sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+  $select_stmt = $conn->prepare($sql);
+  $select_stmt->execute();
+  $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
+  $user_id = $row["user_id"];
+
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
 }
 
-include_once("dbconnect.php");
+if (substr($user_id, 0, 1) == "C") {
+    $sqlstd = "SELECT * FROM `tbl_class` WHERE `client_name` = '$name'";
+} else if (substr($user_id, 0, 1) == "L") {
+    $sqlstd = "SELECT * FROM `tbl_class` WHERE `lecturer_name` = '$name'";
+} else {
+    $sqlstd = "SELECT * FROM `tbl_class`";
+}
 
-$sqlstd = "SELECT * FROM `tbl_class`"; // default value
+
 
 if (isset($_POST['submit'])) {
     include_once("dbconnect.php");
     $matric = $_POST['matric'];
     try {
         // Retrieve student name using matric number
-        $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = :matric";
+        $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = '$matric'";
         $stmt = $conn->prepare($sqlgetname);
-        $stmt->bindParam(':matric', $matric);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $std_name = $row['std_name'];
         
-        // Insert matric number and student name into tbl_class
-        $sqladdStd = "INSERT INTO `tbl_class`(`std_matric`, `std_name`) VALUES (:matric, :std_name)";
+        // Check if user already exists in tbl_class
+        $sqlcheckuser = "SELECT * FROM `tbl_class` WHERE `std_matric` = '$matric'";
+        $stmt = $conn->prepare($sqlcheckuser);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // If user exists, update lecturer_name or client_name based on user_id
+        if ($row) {
+            if (substr($user_id , 0, 1) == "C") {
+                $sqlupdateuser = "UPDATE `tbl_class` SET `client_name`='$name' WHERE `std_matric`='$matric'";
+            } else if (substr($user_id , 0, 1) == "L") {
+                $sqlupdateuser = "UPDATE `tbl_class` SET `lecturer_name`='$name' WHERE `std_matric`='$matric'";
+            }
+        } else {
+            // If user does not exist, insert new user into tbl_class
+            if (substr($user_id, 0, 1) == "C") {
+                $sqlupdateuser = "INSERT INTO `tbl_class`(`std_matric`, `std_name`, `client_name`) VALUES ('$matric', '$std_name', '$name')";
+            } else if (substr($user_id, 0, 1) == "L") {
+                $sqlupdateuser = "INSERT INTO `tbl_class`(`std_matric`, `std_name`, `lecturer_name`) VALUES ('$matric', '$std_name', '$name')";
+            } else {
+                $sqlupdateuser = "INSERT INTO `tbl_class`(`std_matric`, `std_name`) VALUES ('$matric', '$std_name')";
+            }
+        }
         
         // Check if the project exists and has a project title and client name
-        $sqlcheckproject = "SELECT `project_title`, `project_client` FROM `tbl_projects` WHERE `std_name` = :std_name";
+        $sqlcheckproject = "SELECT `project_title`, `project_client` FROM `tbl_projects` WHERE `std_name` = '$std_name'";
         $stmt = $conn->prepare($sqlcheckproject);
-        $stmt->bindParam(':std_name', $std_name);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -35,44 +69,53 @@ if (isset($_POST['submit'])) {
         if ($row) {
             $project_title = $row['project_title'];
             $project_client = $row['project_client'];
-            $sqladdStd = "INSERT INTO `tbl_class`(`std_matric`, `std_name`, `project_title`, `client_name`) 
-                          VALUES (:matric, :std_name, :project_title, :project_client)";
+            
+            if ($row) {
+                if (substr($user_id , 0, 1) == "C") {
+                    $sqlupdateuser = "UPDATE `tbl_class` SET `project_title`='$project_title', `client_name`='$name' WHERE `std_matric`='$matric'";
+                } else if (substr($user_id , 0, 1) == "L") {
+                    $sqlupdateuser = "UPDATE `tbl_class` SET `project_title='$project_title', client_name='$project_client', lecturer_name='$lecturer_name' WHERE std_name`='$std_name'";
+                }
+            }
         }
-        
-        $stmt = $conn->prepare($sqladdStd);
-        $stmt->bindParam(':matric', $matric);
-        $stmt->bindParam(':std_name', $std_name);
-        if (isset($project_title) && isset($project_client)) {
-            $stmt->bindParam(':project_title', $project_title);
-            $stmt->bindParam(':project_client', $project_client);
+         // Execute the update query
+            $stmt = $conn->prepare($sqlupdateuser);
+            $stmt->execute();
+            
+            echo "<script>alert('Student information updated successfully.')</script>";
+            echo "<script>window.location.replace('managestudent.php')</script>";
+        } catch (PDOException $e) {
+            echo "<script>alert('Failed to update student information.')</script>";
+            echo "<script>window.location.replace('managestudent.php')</script>";
         }
-        $stmt->execute();
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('managestudent.php')</script>";
-    } catch (PDOException $e) {
-        echo "<script>alert('Failed')</script>";
-        echo "<script>window.location.replace('managestudent.php')</script>";
     }
-}
 
 
 
 
-
-if (isset($_GET['submit'])) {
-    $operation = $_GET['submit'];
-    if ($operation == 'delete') {
-        $matric = $_GET['matric'];
-        $sqldeleteStd = "DELETE FROM `tbl_class` WHERE std_matric = '$matric'";
-        $conn->exec($sqldeleteStd);
-        echo "<script>alert('Student deleted')</script>";
-        echo "<script>window.location.replace('managestudent.php')</script>";
+    if (isset($_GET['submit'])) {
+        $operation = $_GET['submit'];
+        if ($operation == 'delete') {
+            $matric = $_GET['matric'];
+            if (substr($user_id, 0, 1) == "C") {
+                $sqldeleteStd = "UPDATE `tbl_class` SET `client_name` = NULL WHERE `std_matric` = '$matric'";
+            } else if (substr($user_id, 0, 1) == "L") {
+                $sqldeleteStd = "UPDATE `tbl_class` SET `lecturer_name` = NULL WHERE `std_matric` = '$matric'";
+            } else {
+                $sqldeleteStd = "DELETE FROM `tbl_class` WHERE `std_matric` = '$matric'";
+            }
+            $conn->exec($sqldeleteStd);
+            echo "<script>alert('Student data updated')</script>";
+            echo "<script>window.location.replace('managestudent.php')</script>";
+        }
+        if ($operation == 'search') {
+            $search = $_GET['search'];
+            $sqlstd = "SELECT * FROM tbl_class WHERE std_name LIKE '%$search%'";
+        }
     }
-    if ($operation == 'search') {
-        $search = $_GET['search'];
-        $sqlstd = "SELECT * FROM tbl_class WHERE std_name LIKE '%$search%'";
-    }
-}
+    
+    
+    
 
 $results_per_page = 20;
 if (isset($_GET['pageno'])) {
@@ -153,13 +196,19 @@ $rows = $stmt->fetchAll();
 
 <body>
     <div class="w3-grey">
-    <a href="lecturer.php" class="w3-bar-item w3-button w3-right">Back</a>
+    <a href="<?php 
+    if(substr($user_id, 0, 1) == "L") { 
+        echo 'lecturer.php'; 
+    } else {
+      echo 'client.php'; 
+    } 
+?>" class="w3-bar-item w3-button w3-right">Back</a>
         <div class="w3-container">
             <h3>Manage Student</h3>
         </div>
     </div>
     <div class="w3-bar w3-grey">  
-        <a class="add-student-btn w3-bar-item w3-button w3-right"  href="#">Add Student</a>
+        <a class="add-student-btn w3-bar-item w3-button w3-right" >Add Student</a>
     </div>
     <div class="w3-card w3-container w3-padding w3-margin w3-round">
         <h3>Student Search</h3>

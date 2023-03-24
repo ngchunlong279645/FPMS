@@ -33,7 +33,9 @@ if (isset($_POST['submit'])) {
           echo "<script> window.location.replace('lecturer.php')</script>";
       }elseif (substr($user_id, 0, 1) == "S") {
           echo "<script> window.location.replace('student.php')</script>";
-      }
+      }elseif (substr($user_id, 0, 1) == "C") {
+        echo "<script> window.location.replace('client.php')</script>";
+    }
         }$error_message = 'New password and confirm password do not match.';
       } else {
         $error_message = 'Current password is incorrect.';
@@ -111,8 +113,17 @@ if (isset($_POST['submit'])) {
   </style>
 </head>
 <body>
-<a href="<?php echo (substr($user_id, 0, 1) == "A") ? 'admin.php' : ((substr($user_id, 0, 1) == "L") ? 'lecturer.php' : 'student.php'); ?>" class="button w3-right back-button">Back</a>
-<header class="w3-header w3-blue w3-center w3-padding-32 ">
+<a href="<?php 
+    if(substr($user_id, 0, 1) == "A") { 
+        echo 'admin.php'; 
+    } else if(substr($user_id, 0, 1) == "L") { 
+        echo 'lecturer.php'; 
+    } else if(substr($user_id, 0, 1) == "C") { 
+        echo 'client.php'; 
+    } else {
+      echo 'student.php'; 
+    } 
+?>" class="button w3-right back-button">Back</a><header class="w3-header w3-blue w3-center w3-padding-32 ">
     <h1>FINAL PROJECT MANAGEMENT SYSTEM</h1>
 </header>
   <div class="container">

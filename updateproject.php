@@ -1,11 +1,18 @@
 <?php
 session_start();
+$name = $_SESSION["name"];
+
+include 'dbconnect.php';
+$sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+  $select_stmt = $conn->prepare($sql);
+  $select_stmt->execute();
+  $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
+  $user_id = $row["user_id"];
+
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
 }
-
-include_once("dbconnect.php");
 
 if (isset($_POST['submit'])) {
     $operation = $_POST['submit'];
@@ -100,7 +107,11 @@ if (isset($_GET['submit'])) {
                 <div class="w3-half" style="padding-right:4px">
                     <p>
                         <label><b>Project Client</b></label>
-                        <input class="w3-input w3-border w3-round"  name="client" type="text" value="<?php echo $pclient ?>" required>
+                        <?php if(substr($user_id, 0, 1) == "A") { ?>
+                            <input class="w3-input w3-border w3-round"  name="client" type="text" value="<?php echo $pclient ?>" required>
+                        <?php } elseif(substr($user_id, 0, 1) == "C") { ?>
+                            <input class="w3-input w3-border w3-round" name="client" type="text" value="<?php echo $pclient; ?>" readonly>
+                        <?php } ?>
                     </p>
                 </div>
             </div>

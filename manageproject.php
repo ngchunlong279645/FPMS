@@ -1,5 +1,14 @@
 <?php
 session_start();
+$name = $_SESSION["name"];
+
+include 'dbconnect.php';
+$sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+  $select_stmt = $conn->prepare($sql);
+  $select_stmt->execute();
+  $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
+  $user_id = $row["user_id"];
+  
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
@@ -17,11 +26,20 @@ if (isset($_GET['submit'])) {
     }
     if ($operation == 'search') {
         $search = $_GET['search'];
-        $sqlprojects = "SELECT * FROM tbl_projects WHERE project_title LIKE '%$search%'";
+        if (substr($user_id, 0, 1) == "C") {
+            $sqlprojects = "SELECT * FROM tbl_projects WHERE project_client = '$name' AND project_title LIKE '%$search%'";
+        } else {
+            $sqlprojects = "SELECT * FROM tbl_projects WHERE project_title LIKE '%$search%'";
+        }
     }
 } else {
-    $sqlprojects = "SELECT * FROM tbl_projects";
+    if (substr($user_id, 0, 1) == "C") {
+        $sqlprojects = "SELECT * FROM tbl_projects WHERE project_client = '$name'";
+    } else {
+        $sqlprojects = "SELECT * FROM tbl_projects";
+    }
 }
+
 
 $results_per_page = 5;
 if (isset($_GET['pageno'])) {
@@ -57,10 +75,35 @@ $rows = $stmt->fetchAll();
 
     <title>Welcome to Final Project Management System</title>
 </head>
+<style>
+    .back-button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+  .back-button:hover {
+    background-color: #d32f2f;
+      }
+    </style>
 
 <body>
     <div class="w3-grey">
-    <a href="admin.php" class="w3-bar-item w3-button w3-right">Back</a>
+    <a href="<?php 
+    if(substr($user_id, 0, 1) == "A") { 
+        echo 'admin.php'; 
+    } else {
+      echo 'client.php'; 
+    } 
+?>" class="w3-bar-item w3-button w3-right">Back</a>
         <div class="w3-container">
             <h3>Manage Project</h3>
         </div>
