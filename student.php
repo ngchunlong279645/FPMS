@@ -206,7 +206,7 @@ if ($select_stmt->rowCount() > 0) {
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
             <a href="#" class="w3-bar-item w3-button w3-right">Dashboard</a>
-            <a href="#" class="w3-bar-item w3-button w3-right">Project Status</a>
+            <a href="projectstatus.php" class="w3-bar-item w3-button w3-right">Project Status</a>
             <a href="student.php" class="w3-bar-item w3-button w3-right">Profile</a>
         </div>
     </div>

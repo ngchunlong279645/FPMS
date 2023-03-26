@@ -41,8 +41,6 @@ if (isset($_GET["status"])) {
     }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,40 +48,92 @@ if (isset($_GET["status"])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            background-image: url("pic/wallpaperflare.com_wallpaper.jpg");
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            margin: 0 auto;
+        }
+        form {
+            background-color: rgba(	128, 128, 128, 0.8);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        input[type="text"], input[type="password"] {
+            border: none;
+            border-radius: 5px;
+            font-size: 24px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        input[type="submit"] {
+            background-color: #0095ff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 24px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        input[type="submit"]:hover {
+            background-color: #0073e6;
+        }
+        .signup {
+            font-size: 24px;
+            color: #fff;
+            text-decoration: none;
+            margin-left: 10px;
+            border-bottom: 2px solid #fff;
+            padding-bottom: 5px;
+        }
+        .signup:hover {
+            border-bottom-color: #0073e6;
+        }
+    </style>
 </head>
-    
-<body >
-    <header class="w3-header w3-blue w3-center w3-padding-32 ">
-        <h1>FINAL PROJECT MANAGEMENT SYSTEM</h1>
-        <p>Login Page</p>
-    </header>
-    <div style="display: flex; justify-content: flex-end">
-    <img src="pic/Optergy-BMS-Applications-900.jpg " style = "width:auto; height:auto;">
-        <div class="w3-card w3-padding w3-margin" style="width:600px;margin:auto;text-align:left;">
-            <form action="index.php" method="post">
-                <p>
-                    <label class="w3-text-black"><b>Username</b></label>
-                    <input class="w3-input w3-round w3-border" type="name" name="name" id="idname" required> 
-                </p>
-                <p>
-                    <label class="w3-text-black"><b>Password</b></label>
-                    <input class="w3-input w3-round w3-border" type="password" name="password" id="idpass" required>
-                </p>
-                <p>
-                <input class="w3-check" name="rememberme" type="checkbox" id="idremember" >
-                    <label> Remember Me </label>
-                </p>
-                <p>
-                    <input class="w3-button w3-round w3-border w3-blue" type="submit" name="submit" id="idsubmit">
-                    <a href="signup.php" class="w3-red w3-button ">SignUp</a>
-                   
-                </p>
-                
-                
-            </form>
-        </div>   
-    
-</body>
 
+<body>
+    <div class="container">
+        <form action="index.php" method="post">
+            <h1>Welcome !</h1>
+            <br>
+            <label for="idname">Username</label>
+            <input type="text" name="name" id="idname" required>
+            <label for="idpass">Password</label>
+            <input type="password" name="password" id="idpass" required>
+            <label for="idremember">Remember me  <input type="checkbox" name="rememberme" id="idremember"> </label>
+            <input type="submit" name="submit" id="idsubmit" value="Login">
+            <a href="signup.php" class="signup">Sign up</a>
+        </form>
+    </div>
+</body>
 </html>
+

@@ -19,8 +19,15 @@ if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'delete') {
         $project_id = $_GET['pid'];
+        $sqlgettitle = "SELECT `project_title` FROM `tbl_projects` WHERE `project_id` = ' $project_id'";
+            $stmt = $conn->prepare($sqlgettitle);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $project_title = $row['project_title'];
         $sqldeleteproject = "DELETE FROM `tbl_projects` WHERE project_id = '$project_id'";
+        $sqldeleteStd = "UPDATE `tbl_student` SET `client_name` = NULL ,`project_title`= NULL WHERE `project_title` = '$project_title'";
         $conn->exec($sqldeleteproject);
+        $conn->exec( $sqldeleteStd);
         echo "<script>alert('Project deleted')</script>";
         echo "<script>window.location.replace('manageproject.php')</script>";
     }
