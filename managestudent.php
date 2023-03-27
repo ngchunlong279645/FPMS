@@ -27,6 +27,7 @@ if (substr($user_id, 0, 1) == "C") {
 if (isset($_POST['submit'])) {
     include_once("dbconnect.php");
     $matric = $_POST['matric'];
+   
     try {
         // Retrieve student name using matric number
         $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = '$matric'";
@@ -44,14 +45,81 @@ if (isset($_POST['submit'])) {
         // If user exists, update lecturer_name or client_name based on user_id
         if ($row) {
             if (substr($user_id , 0, 1) == "C") {
-                $sqlupdateuser = "UPDATE `tbl_student` SET `client_name`='$name' WHERE `std_matric`='$matric'";
+                $project_id = $_POST['project_id'];
+                $sqlproject = "SELECT `project_title`, `project_client` FROM `tbl_projects` WHERE `project_id` = '$project_id'";
+                $stmt = $conn->prepare($sqlproject);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $project_title = $row['project_title'];
+                $project_client = $row['project_client'];
+        
+                // Check if project_title already exists in tbl_student
+                $sqlcheckproject = "SELECT * FROM `tbl_student` WHERE `project_title` = '$project_title'";
+                $stmt = $conn->prepare($sqlcheckproject);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    echo "<script>alert('Project title already exists.')</script>";
+                    echo "<script>window.location.replace('managestudent.php')</script>";
+                    exit;
+                }
+
+                // Check if the project client matches the name in the $name variable
+                if ($project_client != $name) {
+                    echo "<script>alert('You are not authorized to add this project.')</script>";
+                    echo "<script>window.location.replace('managestudent.php')</script>";
+                    exit;
+                }
+        
+                // Check if std_name already exists in tbl_projects
+                $sqlcheckname = "SELECT * FROM `tbl_projects` WHERE `std_name` = '$std_name'";
+                $stmt = $conn->prepare($sqlcheckname);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    echo "<script>alert('Student already assigned to a project.')</script>";
+                    echo "<script>window.location.replace('managestudent.php')</script>";
+                    exit;
+                }
+        
+                $sqlupdateuser = "UPDATE `tbl_student` SET `client_name`='$name', `project_title`='$project_title' WHERE `std_matric`='$matric'";
+                $sqlupdateproject = "UPDATE `tbl_projects` SET `std_name`='$std_name' WHERE `project_id`='$project_id'";
+                $stmt = $conn->prepare($sqlupdateproject);
+                $stmt->execute();
+        
             } else if (substr($user_id , 0, 1) == "L") {
-                $sqlupdateuser = "UPDATE `tbl_student` SET `lecturer_name`='$name' WHERE `std_matric`='$matric'";
+                $sqlcheckuser = "SELECT * FROM `tbl_student` WHERE `std_matric` = '$matric'";
+                $stmt = $conn->prepare($sqlcheckuser);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                // If user exists
+                if ($row) {
+                    // Check if lecturer_name field is empty
+                    if (empty($row['lecturer_name'])) {
+                        // If field is empty, update lecturer_name
+                        $sqlupdateuser = "UPDATE `tbl_student` SET `lecturer_name`='$name' WHERE `std_matric`='$matric'";
+                        $stmt = $conn->prepare($sqlupdateuser);
+                        $stmt->execute();
+                        
+                        echo "<script>alert('Student added successfully.')</script>";
+                        echo "<script>window.location.replace('managestudent.php')</script>";
+                    } else {
+                        // If field is not empty, display error message
+                        echo "<script>alert('Cannot add this student. Other lecturer already exists.')</script>";
+                        echo "<script>window.location.replace('managestudent.php')</script>";
+                    }
+                } else {
+                    echo "<script>alert('No student found.')</script>";
+                    echo "<script>window.location.replace('managestudent.php')</script>";
+                }
             }
         } else {
             echo "<script>alert('No student found.')</script>";
+            echo "<script>window.location.replace('managestudent.php')</script>";
         }
          // Execute the update query
+           
             $stmt = $conn->prepare($sqlupdateuser);
             $stmt->execute();
             
@@ -62,8 +130,6 @@ if (isset($_POST['submit'])) {
             echo "<script>window.location.replace('managestudent.php')</script>";
         }
     }
-
-
 
 
     if (isset($_GET['submit'])) {
@@ -80,14 +146,15 @@ if (isset($_POST['submit'])) {
                 $sqldeleteproject = "UPDATE `tbl_projects` SET `std_name` = NULL WHERE `std_name` = '$std_name'";
                 $conn->exec($sqldeleteproject);
                 $sqldeleteStd = "UPDATE `tbl_student` SET `client_name` = NULL ,`project_title`= NULL WHERE `std_matric` = '$matric'";
+                
             } else if (substr($user_id, 0, 1) == "L") {
                 $sqldeleteStd = "UPDATE `tbl_student` SET `lecturer_name` = NULL WHERE `std_matric` = '$matric'";
             } else {
                 $sqldeleteStd = "DELETE FROM `tbl_student` WHERE `std_matric` = '$matric'";
             }
             $conn->exec($sqldeleteStd);
-           //echo "<script>alert('Student deleted')</script>";
-           // echo "<script>window.location.replace('managestudent.php')</script>";
+           echo "<script>alert('Student deleted')</script>";
+           echo "<script>window.location.replace('managestudent.php')</script>";
         }
         if ($operation == 'search') {
             $search = $_GET['search'];
@@ -174,6 +241,14 @@ $rows = $stmt->fetchAll();
       font-size: 18px;
       cursor: pointer;
     }
+
+    .left-align-form {
+        text-align: left;
+    }
+    .left-align-form input[type="submit"] {
+        float: right;
+    }
+
     </style>
 
 <body>
@@ -247,15 +322,22 @@ $rows = $stmt->fetchAll();
 <footer class="w3-footer w3-center w3-bottom w3-grey">FPMS</footer>
 
 <div class="popup-page">
-    <div class="popup-page-content">
+  <div class="popup-page-content">
     <span class="close-popup-page">&times;</span>
-        <form action="managestudent.php" method="POST">
-        <label for="matric-number">Matric Number:</label>
-        <input type="text" name="matric" id="matric">
-        <input type="submit" name="submit" value="submit">
-        </form>
-    </div>
+    <form action="managestudent.php" method="POST" class="left-align-form">
+      <label for="matric-number">Matric Number:</label>
+      <input type="text" name="matric" id="matric">
+      <?php
+        if(substr($user_id, 0, 1) == 'C') {
+          echo '<label for="project-name">Project ID:</label>
+          <input type="text" name="project_id" id="project_id">';
+        }
+      ?>
+      
+      <input type="submit" name="submit" value="submit">
+    </form>
   </div>
+</div>
 
   <script>
     const addStudentBtn = document.querySelector('.add-student-btn');

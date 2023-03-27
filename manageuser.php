@@ -87,6 +87,7 @@ $rows = $stmt->fetchAll();
                             <option value="lecturer">lecturer</option>
                             <option value="admin">admin</option>
                             <option value="student">student</option>
+                            <option value="client">client</option>
                         </select>
                     </p>
                 </div>

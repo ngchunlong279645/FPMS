@@ -14,15 +14,16 @@ $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (isset($_POST['submit'])) {
-    $sqldeleteproject = "UPDATE `tbl_projects` SET `std_name` = NULL WHERE std_name = '$name'";
-    $sqldeleteproject = "DELETE FROM `tbl_projects` WHERE project_id = '$project_id'";
+    echo $sqldeleteproject = "UPDATE `tbl_projects` SET `std_name` = NULL WHERE std_name = '$name'";
+	echo $sqldeletestd = "UPDATE `tbl_student` SET `client_name` = NULL ,`project_title`= NULL WHERE std_name = '$name'";
     try {
+		$conn->exec($sqldeletestd);
         $conn->exec($sqldeleteproject);
             echo "<script>alert('Project deleted')</script>";
             echo "<script>window.location.replace('projectstatusDelete.php')</script>";
     } catch (PDOException $e) {
         echo "<script>alert('Failed')</script>";
-        echo "<script>window.location.replace('projectstatusDelete.php')</script>";
+       echo "<script>window.location.replace('projectstatusDelete.php')</script>";
     }
 }
 
@@ -148,41 +149,48 @@ if (isset($_POST['submit'])) {
 	</style>
 </head>
 <body>
-	<header>
-	<a href="student.php"><button class="back-button"><i class="material-icons">arrow_back</i></button></a>
-	
-		<h1>Project Status</h1>
-	</header>
-	<div class="container">
-		<div class="sidebar">
-			<a href="projectstatus.php" ><i class="material-icons">data_usage</i></a>
-			<a href="projectstatusAdd.php"><i class="material-icons">add_box</i></a>
-			<a href="projectstatusDelete.php" class="active"><i class="material-icons">remove_circle</i></a>
-		</div>
-		<div class="main">
-			<h2>Delete Projects</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Project ID</th>
-						<th>Project Title</th>
-						<th>Project Client</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-				<?php foreach ($rows as $row) ?>
-					<tr>
-						<td><?php echo $row["project_id"]; ?></td>
-						<td><?php echo $row["project_title"]; ?></td>
-						<td><?php echo $row["project_client"]; ?></td>
-						<td>
-							<form method="post">
-                
-								<input type="hidden" name="project_id" value="<?php echo $row["project_id"]; ?>" ?>
+<header>
+    <a href="student.php"><button class="back-button"><i class="material-icons">arrow_back</i></button></a>
+
+    <h1>Project Status</h1>
+</header>
+<div class="container">
+    <div class="sidebar">
+        <a href="projectstatus.php"><i class="material-icons">data_usage</i></a>
+        <a href="projectstatusAdd.php"><i class="material-icons">add_box</i></a>
+        <a href="projectstatusDelete.php" class="active"><i class="material-icons">remove_circle</i></a>
+    </div>
+    <div class="main">
+        <h2>Delete Projects</h2>
+        <?php if (count($rows) > 0): ?>
+            <table>
+                <thead>
+                <tr>
+                    <th>Project ID</th>
+                    <th>Project Title</th>
+                    <th>Project Client</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($rows as $row): ?>
+                    <tr>
+                        <td><?php echo $row["project_id"]; ?></td>
+                        <td><?php echo $row["project_title"]; ?></td>
+                        <td><?php echo $row["project_client"]; ?></td>
+                        <td>
+                            <form method="post">
+                                <input type="hidden" name="project_id" value="<?php echo $row["project_id"]; ?>">
                                 <button type="submit" name="submit" value="delete">Delete</button>
                             </form>
-
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>You don't have any projects to delete. Please add a project first.</p>
+<?php endif; ?>
 </div>
 </div>
 

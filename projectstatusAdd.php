@@ -131,7 +131,7 @@ if ($rowcount > 0) {
 			align-items: center;
 			background-color: #ECEFF1;
 			color: #546E7A;
-			width: 80px;
+			width: 110px;
 			padding-top: 24px;
 			box-shadow: 2px 0 4px rgba(0,0,0,.24);
 		}
@@ -197,7 +197,7 @@ if ($rowcount > 0) {
         <?php
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
-         <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:10%'>Project Title</th>
+         <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:15%'>Project Title</th>
           <th style='width:20%'>Description</th><th style='width:10%'>Client</th> <th style='width:10%'>Date of Start</th>
           <th style='width:10%'>Date of End</th><th style='width:5%'>Duration (days)</th><th style='width:5%'>Operations</th></tr>";
         foreach ($rows as $projects) {
@@ -212,7 +212,7 @@ if ($rowcount > 0) {
             $pdos_timestamp = strtotime($pdos);
             $duration = ceil(($pdoe_timestamp - $pdos_timestamp) / (60 * 60 * 24));
             echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$pdescription</td><td>$pclient</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
-            <td><button class='btn'><a href='projectstatusAdd.php?submit=add&pid=$pid' class='fa fa-plus' onclick=\"return confirm('Are you sure?')\"></a></button></td></tr>";
+            <td><button class='btn'><a href='projectstatusAdd.php?submit=add&pid=$pid' class='fa fa-plus'  onclick=\"return confirm('Are you sure?')\"></a></button></td></tr>";
         }
         echo "</table>";
         ?>

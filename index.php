@@ -69,7 +69,7 @@ if (isset($_GET["status"])) {
         }
         form {
             background-color: rgba(	128, 128, 128, 0.8);
-            border-radius: 10px;
+            border-radius: 30px;
             padding: 30px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             max-width: 500px;
@@ -90,7 +90,7 @@ if (isset($_GET["status"])) {
             border-radius: 5px;
             font-size: 24px;
             padding: 10px;
-            width: 100%;
+            width: 95%;
             margin-bottom: 20px;
         }
         input[type="submit"] {
