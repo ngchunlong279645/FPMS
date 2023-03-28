@@ -12,18 +12,18 @@ $sqlstudent = "SELECT * FROM tbl_student WHERE std_name = '$name'";
 $select_stmt = $conn->prepare($sqlstudent);
 $select_stmt->execute();
 
-if (isset($_GET['submit'])) {
-    $operation = $_GET['submit'];
-    if ($operation == 'delete') {
-        $user_id = $_GET['user_id'];
-        $sqldeletestdinfo = "DELETE FROM `tbl_student` WHERE user_id = '$user_id'";
-        $conn->exec($sqldeletestdinfo);
-        echo "<script>alert('Info deleted')</script>";
-        echo "<script>window.location.replace('student.php')</script>";
-    }
-} else {
-    $sqlstudent = "SELECT * FROM tbl_student";
-}
+//if (isset($_GET['submit'])) {
+   // $operation = $_GET['submit'];
+  //  if ($operation == 'delete') {
+     //   $user_id = $_GET['user_id'];
+     //   $sqldeletestdinfo = "DELETE FROM `tbl_student` WHERE user_id = '$user_id'";
+    //    $conn->exec($sqldeletestdinfo);
+     //   echo "<script>alert('Info deleted')</script>";
+    //    echo "<script>window.location.replace('student.php')</script>";
+  //  }
+//} else {
+  //  $sqlstudent = "SELECT * FROM tbl_student";
+//}
 
 if ($select_stmt->rowCount() > 0) {
     // user information is available in the database
@@ -206,7 +206,11 @@ if ($select_stmt->rowCount() > 0) {
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
             <a href="#" class="w3-bar-item w3-button w3-right">Dashboard</a>
+            <?php if ($select_stmt->rowCount() > 0): ?>
             <a href="projectstatus.php" class="w3-bar-item w3-button w3-right">Project Status</a>
+        <?php else: ?>
+            <a class="w3-bar-item w3-button w3-right"  onclick="alert('Please fill up your information first.');">Project Status</a>
+        <?php endif; ?>
             <a href="student.php" class="w3-bar-item w3-button w3-right">Profile</a>
         </div>
     </div>
@@ -229,7 +233,7 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Race:</strong> <?php echo $race; ?></p>
 		<p><strong>Course:</strong> <?php echo $course; ?></p>
         <a href="updateStdInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
-        <a href="student.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
+        
       
       </div>
     <?php else: ?>

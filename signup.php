@@ -9,7 +9,7 @@ if (isset($_POST['submit'])) {
   $role = ($_POST['role']);
   $userID = generateUserID($role);
   $userID = $conn->quote($userID);
-  echo $sqlregister = "INSERT INTO `tbl_users`(`user_id`, `user_role`, `username`, `user_email`, `user_password`, `user_otp`, `user_credit`) 
+  $sqlregister = "INSERT INTO `tbl_users`(`user_id`, `user_role`, `username`, `user_email`, `user_password`, `user_otp`, `user_credit`) 
   VALUES ($userID, '$role','$username','$useremail','$password','$otp','$credit')";
   
   try {

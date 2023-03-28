@@ -11,10 +11,43 @@ if (isset($_GET['submit'])) {
     if ($operation == 'delete') {
         $user_id = $_GET['uid'];
         $sqldeleteuser = "DELETE FROM `tbl_users` WHERE user_id = '$user_id'";
-        $conn->exec($sqldeleteuser);
+        
+     // check if user_id starts with 'S'
+     if (substr($user_id, 0, 1) == 'S') {
+        $sqlgetname = "SELECT `username` FROM `tbl_users` WHERE `user_id` = '$user_id'";
+        $stmt = $conn->prepare($sqlgetname);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_name = $row['username'];
+        $sqlupdateproject = "UPDATE `tbl_projects` SET `std_name` = NULL WHERE `std_name` = '$user_name'";
+        $conn->exec($sqlupdateproject);
+    }
+    if (substr($user_id, 0, 1) == 'L') {
+        $sqlgetname = "SELECT `username` FROM `tbl_users` WHERE `user_id` = '$user_id'";
+        $stmt = $conn->prepare($sqlgetname);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_name = $row['username'];
+        $sqlupdatestudent = "UPDATE `tbl_student` SET `lecturer_name` = NULL WHERE `lecturer_name` = '$user_name'";
+        $conn->exec($sqlupdatestudent);
+    }
+    if (substr($user_id, 0, 1) == 'C') {
+        $sqlgetname = "SELECT `username` FROM `tbl_users` WHERE `user_id` = '$user_id'";
+        $stmt = $conn->prepare($sqlgetname);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_name = $row['username'];
+        $sqlupdateclient = "UPDATE `tbl_student` SET `client_name` = NULL,`project_title` = NULL WHERE `client_name` = '$user_name'";
+        $sqldeleteproject = "DELETE FROM `tbl_projects` WHERE `project_client` = '$user_name'";
+        $conn->exec($sqlupdateclient);
+        $conn->exec($sqldeleteproject);
+    }
+        
+    $conn->exec($sqldeleteuser);
         echo "<script>alert('User deleted')</script>";
         echo "<script>window.location.replace('manageuser.php')</script>";
-    }
+}
+
     if ($operation == 'search') {
         $search = $_GET['search'];
         $option = $_GET['option'];
@@ -38,7 +71,7 @@ if (isset($_GET['pageno'])) {
 }
 
 
-$stmt = $conn->prepare($sqluser );
+$stmt = $conn->prepare($sqluser);
 $stmt->execute();
 $number_of_result = $stmt->rowCount();
 $number_of_page = ceil($number_of_result / $results_per_page);
