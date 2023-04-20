@@ -1,6 +1,6 @@
 <?php
 session_start();
-$name = $_SESSION["name"];
+$id = $_GET['id'];
 include_once("dbconnect.php");
 
 if (!isset($_SESSION['session_id'])) {
@@ -8,26 +8,16 @@ if (!isset($_SESSION['session_id'])) {
     echo "<script> window.location.replace('index.php')</script>";
     
 }
-$sqlstudent = "SELECT * FROM tbl_student WHERE std_name = '$name'";
+$sqlstudent = "SELECT * FROM tbl_student WHERE std_matric = '$id'";
 $select_stmt = $conn->prepare($sqlstudent);
 $select_stmt->execute();
 
-/*if (isset($_GET['submit'])) {
-   $operation = $_GET['submit'];
-    if ($operation == 'delete') {
-       $user_id = $_GET['user_id'];
-       $sqldeletestdinfo = "DELETE FROM `tbl_student` WHERE user_id = '$user_id'";
-       $conn->exec($sqldeletestdinfo);
-       echo "<script>alert('Info deleted')</script>";
-      echo "<script>window.location.replace('student.php')</script>";
-   }
-} else {
-   $sqlstudent = "SELECT * FROM tbl_student";
-} */
+
 
 if ($select_stmt->rowCount() > 0) {
     // user information is available in the database
     $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
+    $name = $row['std_name'];
     $user_id = $row['user_id'];
     $matric = $row['std_matric'];
     $description = $row['std_description'];
@@ -197,25 +187,20 @@ if ($select_stmt->rowCount() > 0) {
 </head>
 
 <body>
-<a href="index.php" class="button w3-right logout-button">Logout</a>
+<a href="managestudent.php" class="button w3-right logout-button">Back</a>
     <header class="w3-header w3-blue w3-center w3-padding-32 ">
         <h1>FINAL PROJECT MANAGEMENT SYSTEM</h1>
     </header>
 
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
-            <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
-            <a href="dashboard.php" class="w3-bar-item w3-button w3-right">Dashboard</a>
-            <?php if ($select_stmt->rowCount() > 0): ?>
-            <a href="projectstatus.php" class="w3-bar-item w3-button w3-right">Project Status</a>
-        <?php else: ?>
-            <a class="w3-bar-item w3-button w3-right"  onclick="alert('Please fill up your information first.');">Project Status</a>
-        <?php endif; ?>
-            <a href="student.php" class="w3-bar-item w3-button w3-right">Profile</a>
+            <?php
+            echo "<a href='dashboard.php?id=$id' class='w3-bar-item w3-button w3-right'>Dashboard</a>";
+            ?>
         </div>
     </div>
     <div>
-    <h2><?php echo "Welcome $name" ?></h2>
+    <h2><?php echo "$name" ?></h2>
     <div class="profile-container">
   <div class="profile-image"> 
   <img src="../user/student/<?php echo $user_id?>.png" onerror="this.onerror=null;this.src='pic/lecturer.webp'" >
@@ -232,12 +217,11 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Gender:</strong> <?php echo $gender; ?></p>
         <p><strong>Race:</strong> <?php echo $race; ?></p>
 		<p><strong>Course:</strong> <?php echo $course; ?></p>
-        <a href="updateStdInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
         
       
       </div>
     <?php else: ?>
-      <p>You haven't filled in your information yet. Click <a class="add-info-link" href="addStdInfo.php">here</a> to fill it in.</p>
+      <p>No information </p>
     <?php endif; ?>
   </div>
   <div class="profile-calendar">

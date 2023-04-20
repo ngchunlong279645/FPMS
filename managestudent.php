@@ -288,12 +288,13 @@ $rows = $stmt->fetchAll();
         foreach ($rows as $student) {
             $i++;
             $std_matric = $student['std_matric'];
-            $std_name = $student['std_name'];
+            $std_name = "<a href='studentprofile.php?id={$student['std_matric']}'>" . $student['std_name'] . "</a>";
             $project_title = $student['project_title'];
             $client_name = $student['client_name'];
             echo "<tr><td>$i</td><td>$std_matric</td><td>$std_name</td><td>$project_title</td><td>$client_name</td>
-            <td><button class='btn'><a href='managestudent.php?submit=delete&matric=$std_matric' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>";
+                <td><button class='btn'><a href='managestudent.php?submit=delete&matric=$std_matric' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>";
         }
+        
         echo "</table>";
         ?>
     </div>
