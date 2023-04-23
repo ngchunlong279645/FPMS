@@ -24,6 +24,19 @@ if (isset($_GET['submit'])) {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $project_title = $row['project_title'];
+           
+            // Check if any student is assigned to this project
+            $sqlcheckstudent = "SELECT * FROM `tbl_student` WHERE `project_title` = '$project_title'";
+            $stmt = $conn->prepare($sqlcheckstudent);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                echo "<script>alert('Please remove the student assigned to this project before deleting.')</script>";
+                echo "<script>window.location.replace('manageproject.php')</script>";
+                exit;
+            }
+            
+            
         $sqldeleteproject = "DELETE FROM `tbl_projects` WHERE project_id = '$project_id'";
         $sqldeleteStd = "UPDATE `tbl_student` SET `client_name` = NULL ,`project_title`= NULL WHERE `project_title` = '$project_title'";
         $conn->exec($sqldeleteproject);
@@ -141,25 +154,43 @@ $rows = $stmt->fetchAll();
         <?php
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
-         <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:10%'>Project Title</th><th style='width:20%'>Requirement</th>
-          <th style='width:20%'>Description</th><th style='width:10%'>Client</th> <th style='width:10%'>Date of Start</th>
-          <th style='width:10%'>Date of End</th><th style='width:5%'>Duration (days)</th><th style='width:5%'>Operations</th></tr>";
+        <tr><th style='width:5%'>No</th><th style='width:5%'>Project ID</th><th style='width:10%'>Project Title</th><th style='width:20%'>Requirement</th>
+         <th style='width:20%'>Description</th>";
+
+        if (substr($user_id, 0, 1) == "A") {
+        echo "<th style='width:10%'>Client</th><th style='width:10%'>Student Name</th>";
+        } else {
+        echo "<th style='width:10%'>Student Name</th>";
+        }
+
+        echo "<th style='width:10%'>Date of Start</th>
+                <th style='width:10%'>Date of End</th><th style='width:5%'>Duration (days)</th><th style='width:5%'>Operations</th></tr>";
+            
         foreach ($rows as $projects) {
-            $i++;
-            $pid = $projects['project_id'];
-            $ptitle = $projects['project_title'];
-            $prequirement = $projects['project_requirement'];
+        $i++;
+        $pid = $projects['project_id'];
+        $ptitle = $projects['project_title'];
+        $prequirement = $projects['project_requirement'];
+        $pdescription = $projects['project_description'];
+        $pdos = $projects['project_start'];
+        $pdoe = $projects['project_end'];
+        $pdoe_timestamp = strtotime($pdoe);
+        $pdos_timestamp = strtotime($pdos);
+        $duration = ceil(($pdoe_timestamp - $pdos_timestamp) / (60 * 60 * 24));
+        
+        if (substr($user_id, 0, 1) == "A") {
             $pclient = $projects['project_client'];
-            $pdescription = $projects['project_description'];
-            $pdos = $projects['project_start'];
-            $pdoe = $projects['project_end'];
-            $pdoe_timestamp = strtotime($pdoe);
-            $pdos_timestamp = strtotime($pdos);
-            $duration = ceil(($pdoe_timestamp - $pdos_timestamp) / (60 * 60 * 24));
-            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$pclient</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
+            $std_name = $projects['std_name'];
+            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$pclient</td><td>$std_name</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
             <td><button class='btn'><a href='manageproject.php?submit=delete&pid=$pid' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
             <button class='btn'><a href='updateproject.php?submit=details&pid=$pid' class='fa fa-edit'></a></button></td></tr>";
-        }
+        } else {
+            $std_name = $projects['std_name'];
+            echo "<tr><td>$i</td><td>$pid</td><td> $ptitle</td><td>$prequirement</td><td>$pdescription</td><td>$std_name</td><td>$pdos</td><td>$pdoe</td><td>$duration</td>
+            <td><button class='btn'><a href='manageproject.php?submit=delete&pid=$pid' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
+            <button class='btn'><a href='updateproject.php?submit=details&pid=$pid' class='fa fa-edit'></a></button></td></tr>";
+                }
+            }
         echo "</table>";
         ?>
     </div>

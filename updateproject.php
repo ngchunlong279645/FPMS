@@ -23,18 +23,101 @@ if (isset($_POST['submit'])) {
     $project_description = addslashes($_POST['description']);
     $project_start = addslashes($_POST['start']);
     $project_end = addslashes($_POST['end']);
-   $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`=' $project_title',`project_requirement`='$project_requirement',
-    `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end'
-    WHERE project_id = '$pid'";
-    try {
-        $conn->exec($sqlupdateP);
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('manageproject.php')</script>";
-    } catch (PDOException $e) {
-       echo "<script>alert('Failed')</script>";
-       echo "<script>window.location.replace('updateproject.php')</script>";
+    $std_name = addslashes($_POST['name']);
+    $std_matric = addslashes($_POST['std_matric']);
+
+    if (substr($user_id , 0, 1) == "C") {
+        if (!empty($std_name)) {
+            $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`='$project_title',`project_requirement`='$project_requirement',
+                `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end',
+                `std_name`='$std_name' WHERE project_id = '$pid'";
+            $sqlupdateS = "UPDATE `tbl_student` SET `project_title`='$project_title',`client_name`='$project_client'
+                 WHERE `std_name`='$std_name'";  
+                 $conn->exec($sqlupdateS);
+        } else {
+            $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`='$project_title',`project_requirement`='$project_requirement',
+                `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end',
+                `std_name`=NULL WHERE project_id = '$pid'";
+        }
+    }else if (substr($user_id , 0, 1) == "A") {
+        //??
+        if (!empty($std_name)) {
+            $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`='$project_title',`project_requirement`='$project_requirement',
+                `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end',
+                `std_name`='$std_name' WHERE project_id = '$pid'";
+            $sqlupdateS = "UPDATE `tbl_student` SET `project_title`='$project_title',`client_name`='$project_client'
+                 WHERE `std_name`='$std_name'";  
+                 $conn->exec($sqlupdateS);
+        } else {
+            if (!empty($std_matric)) {
+                $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = '$std_matric'";
+                $stmt = $conn->prepare($sqlgetname);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $std_name = $row['std_name'];
+
+                // Check if user already exists in tbl_student
+                $sqlcheckuser = "SELECT * FROM `tbl_student` WHERE `std_matric` = '$std_matric'";
+                $stmt = $conn->prepare($sqlcheckuser);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                // Check if project_title already exists in tbl_student
+                $sqlcheckproject = "SELECT * FROM `tbl_student` WHERE `project_title` = '$project_title'";
+                $stmt = $conn->prepare($sqlcheckproject);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    echo "<script>alert('Project title already taken.')</script>";
+                    echo "<script>window.location.replace('updateproject.php?submit=details&pid=$pid')</script>";
+                    exit;
+                }
+                // Check if std_name already exists in tbl_projects
+                $sqlcheckname = "SELECT * FROM `tbl_projects` WHERE `std_name` = '$std_name'";
+                $stmt = $conn->prepare($sqlcheckname);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    echo "<script>alert('Student already assigned to a project.')</script>";
+                    echo "<script>window.location.replace('updateproject.php?submit=details&pid=$pid')</script>";
+                    exit;
+                }
+
+            $sqlupdateuser = "UPDATE `tbl_student` SET `client_name`='$project_client', `project_title`='$project_title' WHERE `std_matric`='$std_matric'";
+            $conn->exec($sqlupdateuser);
+            echo $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`='$project_title',`project_requirement`='$project_requirement',
+                `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end',
+                `std_name`= '$std_name' WHERE project_id = '$pid'";
+           
+
+            } else {
+            echo "<script>alert('No student found.')</script>";
+            echo "<script>window.location.replace('updateproject.php?submit=details&pid=$pid.php')</script>";
+            exit;
+            }
+
+            }else{
+                $sqlupdateP = "UPDATE `tbl_projects` SET `project_title`='$project_title',`project_requirement`='$project_requirement',
+                `project_client`='$project_client',`project_description`='$project_description',`project_start`='$project_start',`project_end`='$project_end',
+                `std_name`=NULL WHERE project_id = '$pid'";
+            }
+           
+        }
+
     }
+
+    
+
+try {
+    $conn->exec($sqlupdateP);
+    echo "<script>alert('Success')</script>";
+    echo "<script>window.location.replace('manageproject.php')</script>";
+} catch (PDOException $e) {
+   echo "<script>alert('Failed')</script>";
+   echo "<script>window.location.replace('updateproject.php')</script>";
 }
+}
+
 
 if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
@@ -53,6 +136,16 @@ if (isset($_GET['submit'])) {
                 $pdescription = $projects['project_description'];
                 $pstart = $projects['project_start'];
                 $pend = $projects['project_end'];
+                $pstd = $projects['std_name'];
+                if(!empty( $pstd)){
+                    $sqlgetmatric = "SELECT std_matric FROM tbl_student WHERE std_name = '$pstd'";
+                    $stmt = $conn->prepare( $sqlgetmatric);
+                    $stmt->execute();
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $std_matric = $result['std_matric'];
+                }else{
+                    $std_matric = "";
+                }
             }
         }else{
             echo "<script>alert('No project found')</script>";
@@ -63,6 +156,33 @@ if (isset($_GET['submit'])) {
    echo "<script>alert('Error')</script>";
    echo "<script>window.location.replace('manageproject.php')</script>";
 }
+
+if (isset($_GET['submit'])) {
+    $operation = $_GET['submit'];
+    if ($operation == 'delete') {
+        
+        $ptitle = $_GET['ptitle'];
+        $pstd = $_GET['pstd'];
+        $pid = $_GET['pid'];
+        
+            // Update tbl_projects with std_name=NULL for the given project_title
+            $sqlupdate1 = "UPDATE `tbl_projects` SET `std_name`=NULL WHERE project_title='$ptitle'";
+            $sqlupdate2 = "UPDATE tbl_student SET project_title = NULL, client_name = NULL WHERE std_name = '$pstd'";
+            
+            try {
+                $conn->exec($sqlupdate1);
+                $conn->exec($sqlupdate2);
+                echo "<script>alert('Student deleted successfully')</script>";
+                echo "<script>window.location.replace('manageproject.php')</script>";
+            } catch (PDOException $e) {
+                echo "<script>alert('Failed to delete student')</script>";
+                echo "<script>window.location.replace('updateproject.php?pid=$pid&submit=details')</script>";
+            }
+        }
+    }
+    
+
+
 ?>
 
 
@@ -105,7 +225,35 @@ if (isset($_GET['submit'])) {
                     </p>
                 </div>
                 <div class="w3-half" style="padding-right:4px">
+                <?php if(substr($user_id, 0, 1) == "A") { ?>
+                <div class="w3-half" style="padding-right:4px">
                     <p>
+                        <label><b>Student Name</b></label>
+                        <input class="w3-input w3-border w3-round w3-light-grey" name="name" type="text" value="<?php echo $pstd ?>" readonly>
+                    </p>
+                </div>
+                <div class="w3-half" style="padding-right:4px">
+                    <p>
+                        <label><b>Student Matric</b></label>
+                        <?php if($std_matric) { ?>
+                            <input class="w3-input w3-border w3-round w3-light-grey" name="std_matric" type="text" value="<?php echo $std_matric ?>" readonly>
+                            <?php if($std_matric) { ?>
+                                <button class='btn'><a href='updateproject.php?submit=delete&ptitle=<?php echo $ptitle?>&pstd=<?php echo $pstd?>&pid=<?php echo $pid?>' class='fa fa-ban' onclick="return confirm('Are you sure?')"></a></button>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <input class="w3-input w3-border w3-round" name="std_matric" type="text" value="">
+                        <?php } ?>
+                    </p>
+                </div>
+                <?php } elseif(substr($user_id, 0, 1) == "C") { ?>
+                    <p>
+                        <input class="w3-input w3-border w3-round w3-light-grey" name="name" type="hidden" value="<?php echo $pstd ?>" readonly>
+                    </p>
+                <?php } ?>
+            </div>
+
+                <div class="w3-half" style="padding-right:4px">
+                    
                         <label><b>Project Client</b></label>
                         <?php if(substr($user_id, 0, 1) == "A") { ?>
                             <input class="w3-input w3-border w3-round"  name="client" type="text" value="<?php echo $pclient ?>" required>

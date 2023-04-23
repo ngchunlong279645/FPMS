@@ -12,7 +12,7 @@ $sqlclient = "SELECT * FROM tbl_client WHERE client_name = '$name'";
 $select_stmt = $conn->prepare($sqlclient);
 $select_stmt->execute();
 
-if (isset($_GET['submit'])) {
+/*if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     if ($operation == 'delete') {
         $user_id = $_GET['user_id'];
@@ -24,6 +24,7 @@ if (isset($_GET['submit'])) {
 } else {
     $sqlclient = "SELECT * FROM tbl_client";
 }
+*/
 
 if ($select_stmt->rowCount() > 0) {
     // user information is available in the database
@@ -201,8 +202,16 @@ if ($select_stmt->rowCount() > 0) {
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
+            <?php if ($select_stmt->rowCount() > 0): ?>
             <a href="managestudent.php" class="w3-bar-item w3-button w3-right">Student</a>
+            <?php else: ?>
+            <a class="w3-bar-item w3-button w3-right"  onclick="alert('Please fill up your information first.');">Student</a>
+            <?php endif; ?>
+            <?php if ($select_stmt->rowCount() > 0): ?>
             <a href="manageproject.php" class="w3-bar-item w3-button w3-right">Project</a>
+            <?php else: ?>
+            <a class="w3-bar-item w3-button w3-right"  onclick="alert('Please fill up your information first.');">Project</a>
+            <?php endif; ?>
             <a href="client.php" class="w3-bar-item w3-button w3-right">Profile</a>
             
         </div>
@@ -226,7 +235,7 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Race:</strong> <?php echo $race; ?></p>
         <p><strong>Office:</strong> <?php echo $office; ?></p>
         <a href="updateClientInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
-        <a href="client.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
+        
       
       </div>
     <?php else: ?>

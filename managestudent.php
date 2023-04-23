@@ -283,17 +283,33 @@ $rows = $stmt->fetchAll();
         <?php
         $i = 0;
         echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
-         <tr><th style='width:5%'>No</th><th style='width:10%'>Matric No.</th><th style='width:20%'>Student Name</th><th style='width:30%'>Project Title</th><th style='width:30%'>Client Name</th>
-        <th style='width:5%'>Operations</th></tr>";
+         <tr><th style='width:5%'>No</th><th style='width:10%'>Matric No.</th><th style='width:20%'>Student Name</th><th style='width:30%'>Project Title</th>";
+            if(substr($user_id, 0, 1) == "C") { 
+                echo "<th style='width:30%'>Lecturer Name</th>";
+            } else {
+                echo "<th style='width:30%'>Client Name</th>";
+            }
+            echo "<th style='width:5%'>Operations</th></tr>";
+
         foreach ($rows as $student) {
             $i++;
             $std_matric = $student['std_matric'];
             $std_name = "<a href='studentprofile.php?id={$student['std_matric']}'>" . $student['std_name'] . "</a>";
             $project_title = $student['project_title'];
-            $client_name = $student['client_name'];
-            echo "<tr><td>$i</td><td>$std_matric</td><td>$std_name</td><td>$project_title</td><td>$client_name</td>
+            
+            if(substr($user_id, 0, 1) == "L") {
+                // if user_id starts with L, show the client name
+                $client_name = $student['client_name'];
+                echo "<tr><td>$i</td><td>$std_matric</td><td>$std_name</td><td>$project_title</td><td>$client_name</td>
                 <td><button class='btn'><a href='managestudent.php?submit=delete&matric=$std_matric' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>";
+            } else {
+                // if user_id starts with C, show the lecturer name
+                $lecturer_name = $student['lecturer_name'];
+                echo "<tr><td>$i</td><td>$std_matric</td><td>$std_name</td><td>$project_title</td><td>$lecturer_name</td>
+                <td><button class='btn'><a href='managestudent.php?submit=delete&matric=$std_matric' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>";
+            }
         }
+        
         
         echo "</table>";
         ?>

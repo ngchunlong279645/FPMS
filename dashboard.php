@@ -190,12 +190,15 @@ $rows = $stmt->fetchAll();
 </style>
 <body>
     <header>
-        <a href="<?php 
-        if(substr($user_id, 0, 1) == "L") { 
-            echo "studentprofile.php?id=$id"; 
-        }  else {
-            echo 'student.php'; 
-        } ?>" class="button w3-right back-button">Back</a>
+    <a href="<?php 
+    if(substr($user_id, 0, 1) == "L") { 
+        echo "studentprofile.php?id=$id"; 
+    } else if(substr($user_id, 0, 1) == "C") {
+        echo "studentprofile.php?id=$id";
+    } else {
+        echo 'student.php'; 
+    } ?>" class="button w3-right back-button">Back</a>
+
         <h1>Dashboard</h1>
        
     </header>

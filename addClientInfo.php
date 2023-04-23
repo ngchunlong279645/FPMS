@@ -7,6 +7,7 @@ $select_stmt = $conn->prepare($sql);
 $select_stmt->execute();
 $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
 $user_id = $row["user_id"];
+$user_email = $row["user_email"];
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
     echo "<script> window.location.replace('login.php')</script>";
@@ -22,16 +23,19 @@ if (isset($_POST['submit'])) {
     $gender = $_POST['gender'];
     $races = $_POST['races'];
     $office = addslashes($_POST['office']);
-   echo  $sqlinsertClientinfo = "INSERT INTO `tbl_client`(`user_id`, `client_name`, `client_description`, `client_tel`, `client_email`,
+   $sqlinsertClientinfo = "INSERT INTO `tbl_client`(`user_id`, `client_name`, `client_description`, `client_tel`, `client_email`,
    `client_address`, `client_dateofbirth`, `client_gender`, `client_races`, `client_office`) 
     VALUES ('$user_id','$name','$description','$tel','$email','$address','$dob','$gender','$races','$office')";
    try {
-      $conn->exec($sqlinsertClientinfo);
-      if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
-        uploadImage($user_id);
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('client.php')</script>";
-      }
+	$conn->exec( $sqlinsertClientinfo);
+	if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
+		uploadImage($user_id);
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
+	} else {
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
+	}
   } catch (PDOException $e) {
   		echo "<script>alert('Failed')</script>";
      	echo "<script>window.location.replace('addClientInfo.php')</script>";
@@ -174,7 +178,7 @@ function uploadImage($filename)
 		</div>
 		<div class="form-group">
 			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" required>
+			<input type="email" id="email" name="email" value="<?php echo "$user_email" ?> " required>
 		</div>
 		<div class="form-group">
 			<label for="dob">Date of Birth:</label>

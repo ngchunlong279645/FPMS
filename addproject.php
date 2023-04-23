@@ -23,20 +23,68 @@ if (isset($_POST['submit'])) {
   $project_description = addslashes($_POST['description']);
   $project_start = addslashes($_POST['start']);
   $project_end = addslashes($_POST['end']);
-  echo $sqladdproject = "INSERT INTO `tbl_projects`(`project_id`, `project_title`, `project_requirement`, `project_client`, `project_description`, `project_start`, `project_end`) 
-  VALUES ('$project_id','$project_title','$project_requirement','$project_client','$project_description','$project_start','$project_end')";
+  $matric = $_POST['matric'];
+  $std_name = "";
+  if (!empty($matric)) {
+        $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE `std_matric` = '$matric'";
+        $stmt = $conn->prepare($sqlgetname);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $std_name = $row['std_name'];
+        
+        // Check if user already exists in tbl_student
+        $sqlcheckuser = "SELECT * FROM `tbl_student` WHERE `std_matric` = '$matric'";
+        $stmt = $conn->prepare($sqlcheckuser);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
+        // Check if project_title already exists in tbl_student
+        $sqlcheckproject = "SELECT * FROM `tbl_projects` WHERE `project_title` = '$project_title'";
+        $stmt = $conn->prepare($sqlcheckproject);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            echo "<script>alert('Project title already exists.')</script>";
+            echo "<script>window.location.replace('addproject.php')</script>";
+            exit;
+        }
+        // Check if std_name already exists in tbl_projects
+        $sqlcheckname = "SELECT * FROM `tbl_projects` WHERE `std_name` = '$std_name'";
+        $stmt = $conn->prepare($sqlcheckname);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            echo "<script>alert('Student already assigned to a project.')</script>";
+            echo "<script>window.location.replace('addproject.php')</script>";
+            exit;
+        }
+
+      $sqlupdateuser = "UPDATE `tbl_student` SET `client_name`='$project_client', `project_title`='$project_title' WHERE `std_matric`='$matric'";
+      $stmt = $conn->prepare($sqlupdateuser);
+      $stmt->execute();
+    } else {
+      echo "<script>alert('No student found.')</script>";
+      echo "<script>window.location.replace('addproject.php')</script>";
+      exit;
+    }
+  
+}
+  $sqladdproject = "INSERT INTO `tbl_projects`(`project_id`, `project_title`, `project_requirement`, `project_client`, `project_description`, `project_start`, `project_end`, `std_name`) 
+  VALUES ('$project_id','$project_title','$project_requirement','$project_client','$project_description','$project_start','$project_end','$std_name')";
   
 
   try {
     $conn->exec($sqladdproject);
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('manageproject.php')</script>";
-} catch (PDOException $e) {
+    echo "<script>alert('Success')</script>";
+    echo "<script>window.location.replace('manageproject.php')</script>";
+  } catch (PDOException $e) {
     echo "<script>alert('Failed')</script>";
     echo "<script>window.location.replace('addproject.php')</script>";
+  }
 }
-      
-}
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +108,7 @@ if (isset($_POST['submit'])) {
         <h1>Add New Project</h1>   
 	    <form>
         <div class="w3-row">
-          <div class="w3-half" style="padding-right:4px">
+          <div class="w3-full" style="padding-right:4px">
             <p>
               <label>
                 <b>Project Title</b>
@@ -69,6 +117,19 @@ if (isset($_POST['submit'])) {
             </p>
           </div>
           <div class="w3-half" style="padding-right:4px">
+            <?php if(substr($user_id, 0, 1) == "A") { ?>
+              <div class="w3-half" style="padding-right:4px">
+              <p>
+                <label><b>Student Matric</b></label>
+                <input class="w3-input w3-border w3-round" name="matric" type="text">
+              </p>
+            </div>
+            <?php } elseif(substr($user_id, 0, 1) == "C") { ?>
+             <p>
+            </P>
+                <?php } ?>
+          </div>
+        <div class="w3-half" style="padding-right:4px">
             <p>
                 <label><b>Project Client</b></label>
                 <?php if(substr($user_id, 0, 1) == "A") { ?>

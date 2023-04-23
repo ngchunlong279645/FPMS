@@ -1,7 +1,13 @@
 <?php
 session_start();
+$name = $_SESSION["name"];
 $id = $_GET['id'];
 include_once("dbconnect.php");
+$sql = "SELECT * FROM tbl_users WHERE username = '$name '";
+  $select_stmt = $conn->prepare($sql);
+  $select_stmt->execute();
+  $row = $select_stmt->fetch(PDO::FETCH_ASSOC);
+  $user_id = $row["user_id"];
 
 if (!isset($_SESSION['session_id'])) {
     echo "<script>alert('Session not available. Please login');</script>";
@@ -28,6 +34,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = $row['std_gender'];
     $race = $row['std_races'];
 	$course= $row['std_course'];
+    $project_title = $row['project_title'];
 
 } else {
     // user information is not available in the database
@@ -41,6 +48,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = "";
     $race = "";
 	$course = "";
+    $project_title = "";
 
 }
 
@@ -194,9 +202,12 @@ if ($select_stmt->rowCount() > 0) {
 
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
-            <?php
+        <?php if ($project_title != ""): 
             echo "<a href='dashboard.php?id=$id' class='w3-bar-item w3-button w3-right'>Dashboard</a>";
             ?>
+        <?php else: ?>
+            <a class="w3-bar-item w3-button w3-right" onclick="alert('This student has not added a project yet. Please ask them to add a project.');">Dashboard</a>
+        <?php endif; ?>
         </div>
     </div>
     <div>

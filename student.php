@@ -38,6 +38,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = $row['std_gender'];
     $race = $row['std_races'];
 	$course= $row['std_course'];
+    $project_title = $row['project_title'];
 
 } else {
     // user information is not available in the database
@@ -51,6 +52,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = "";
     $race = "";
 	$course = "";
+    $project_title = "";
 
 }
 
@@ -205,7 +207,11 @@ if ($select_stmt->rowCount() > 0) {
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
+            <?php if ($project_title != ""): ?>
             <a href="dashboard.php" class="w3-bar-item w3-button w3-right">Dashboard</a>
+        <?php else: ?>
+            <a class="w3-bar-item w3-button w3-right" onclick="alert('Please add a project first.');">Dashboard</a>
+        <?php endif; ?>
             <?php if ($select_stmt->rowCount() > 0): ?>
             <a href="projectstatus.php" class="w3-bar-item w3-button w3-right">Project Status</a>
         <?php else: ?>
