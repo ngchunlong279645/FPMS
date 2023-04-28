@@ -9,20 +9,30 @@ if (isset($_POST['submit'])) {
   $role = ($_POST['role']);
   $userID = generateUserID($role);
   $userID = $conn->quote($userID);
-  $sqlregister = "INSERT INTO `tbl_users`(`user_id`, `user_role`, `username`, `user_email`, `user_password`, `user_otp`, `user_credit`) 
-  VALUES ($userID, '$role','$username','$useremail','$password','$otp','$credit')";
-  
-  try {
-  $conn->exec($sqlregister);
-  echo "<script>alert('Success')</script>";
-  echo "<script>window.location.replace('index.php')</script>"; 
-  } catch (PDOException $e){
-      echo "<script>alert('Failed')</script>";
-     echo "<script>window.location.replace('signup.php')</script>";
-  
+
+  // Check if the username or useremail already exists in the database
+  $sqlcheck = "SELECT * FROM `tbl_users` WHERE `username` = '$username' OR `user_email` = '$useremail'";
+  $stmtcheck = $conn->prepare($sqlcheck);
+  $stmtcheck->execute();
+  $result = $stmtcheck->fetch(PDO::FETCH_ASSOC);
+  if ($result) {
+      echo "<script>alert('Username or email already exists')</script>";
+      echo "<script>window.location.replace('signup.php')</script>";
+  } else {
+      $sqlregister = "INSERT INTO `tbl_users`(`user_id`, `user_role`, `username`, `user_email`, `user_password`, `user_otp`, `user_credit`) 
+          VALUES ($userID, '$role','$username','$useremail','$password','$otp','$credit')";
+
+      try {
+          $conn->exec($sqlregister);
+          echo "<script>alert('Success')</script>";
+          echo "<script>window.location.replace('index.php')</script>"; 
+      } catch (PDOException $e){
+          echo "<script>alert('Failed')</script>";
+          echo "<script>window.location.replace('signup.php')</script>";
+      }
+  }
 }
-      
-}
+
 
 function generateUserID($role) {
   $prefix = substr($role, 0, 1);

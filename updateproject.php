@@ -256,9 +256,9 @@ if (isset($_GET['submit'])) {
                     
                         <label><b>Project Client</b></label>
                         <?php if(substr($user_id, 0, 1) == "A") { ?>
-                            <input class="w3-input w3-border w3-round"  name="client" type="text" value="<?php echo $pclient ?>" required>
+                            <input class="w3-input w3-border w3-round w3-light-grey"  name="client" type="text" value="<?php echo $pclient ?>" readonly>
                         <?php } elseif(substr($user_id, 0, 1) == "C") { ?>
-                            <input class="w3-input w3-border w3-round" name="client" type="text" value="<?php echo $pclient; ?>" readonly>
+                            <input class="w3-input w3-border w3-round w3-light-grey" name="client" type="text" value="<?php echo $pclient; ?>" readonly>
                         <?php } ?>
                     </p>
                 </div>

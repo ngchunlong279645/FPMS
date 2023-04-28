@@ -174,16 +174,25 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 					<td><?php echo $row["project_requirement"]; ?></td>
 				</tr>
 				<tr>
-					<td class="title">Client</td>
-					<td><?php echo $row["project_client"]; ?></td>
-				</tr>
-				<tr>
 					<td class="title">Start Date</td>
 					<td><?php echo $row["project_start"]; ?></td>
 				</tr>
 				<tr>
 					<td class="title">End Date</td>
 					<td><?php echo $row["project_end"]; ?></td>
+				</tr>
+				<tr>
+					<td class="title">Client</td>
+					<td><?php 
+					$client_name = $row["project_client"];
+					$sqlgetuid = "SELECT `user_id` FROM `tbl_users` WHERE `username` = '$client_name'";
+					$stmt = $conn->prepare($sqlgetuid);
+					$stmt->execute();
+					$row = $stmt->fetch(PDO::FETCH_ASSOC);
+					$uid = $row['user_id'];
+
+					echo "<a href='userprofile.php?id={$uid}'>" . $client_name . "</a>";
+					?></td>
 				</tr>
 			<?php endforeach; ?>
 		</table>

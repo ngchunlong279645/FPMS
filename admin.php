@@ -201,7 +201,7 @@ if ($select_stmt->rowCount() > 0) {
     <div class="w3-blue">
         <div class="w3-bar w3-light-blue">
             <a href="chgpassword.php" class="w3-bar-item w3-button w3-right">Change Password</a>
-            <a href="#" class="w3-bar-item w3-button w3-right">Report</a>
+            <a href="report.php" class="w3-bar-item w3-button w3-right">Report</a>
             <a href="manageproject.php" class="w3-bar-item w3-button w3-right">Manage Project</a>
             <a href="manageuser.php" class="w3-bar-item w3-button w3-right">Manage User</a>
             <a href="admin.php" class="w3-bar-item w3-button w3-right">Profile</a>
@@ -227,7 +227,7 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Race:</strong> <?php echo $race; ?></p>
         <p><strong>Office:</strong> <?php echo $office; ?></p>
         <a href="updateAdminInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
-        <a href="admin.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
+        
       
       </div>
     <?php else: ?>

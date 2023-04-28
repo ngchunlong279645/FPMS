@@ -15,6 +15,86 @@ if (isset($_POST['submit'])) {
     $password = $_POST['password']; 
     $sqlupdate = "UPDATE `tbl_users` SET `username`='$name',`user_email`='$useremail',`user_password`='$password'
     WHERE user_id = '$uid'";
+         if (substr($uid , 0, 1) == "S") {
+            $sqlgetname = "SELECT `std_name` FROM `tbl_student` WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlgetname);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $std_name = $row['std_name'];
+
+            $sqlcheckstd = "SELECT * FROM `tbl_projects` WHERE `std_name` = '$std_name'";
+            $stmt = $conn->prepare($sqlcheckstd);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $sqlupdateprostd = "UPDATE `tbl_projects` SET `std_name`='$name' WHERE `std_name` = '$std_name'";
+                $stmt = $conn->prepare($sqlupdateprostd);
+                $stmt->execute();
+            }
+
+            $sqlupdatestd = "UPDATE `tbl_student` SET `std_name`='$name', `std_email`='$useremail' WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlupdatestd);
+            $stmt->execute();
+
+         }else if (substr($uid , 0, 1) == "L") {
+            $sqlgetname = "SELECT `lec_name` FROM `tbl_lecturer` WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlgetname);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $lec_name = $row['lec_name'];
+
+            $sqlchecklec = "SELECT * FROM `tbl_student` WHERE `lecturer_name` = '$lec_name'";
+            $stmt = $conn->prepare($sqlchecklec);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $sqlupdatestdlec = "UPDATE `tbl_student` SET `lecturer_name`='$name' WHERE `lecturer_name` = '$lec_name'";
+                $stmt = $conn->prepare($sqlupdatestdlec);
+                $stmt->execute();
+            }
+
+            $sqlupdatelec = "UPDATE `tbl_lecturer` SET `lec_name`='$name', `lec_email`='$useremail' WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlupdatelec);
+            $stmt->execute();
+
+
+         }else if (substr($uid , 0, 1) == "C") {
+            $sqlgetname = "SELECT `client_name` FROM `tbl_client` WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlgetname);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $client_name = $row['client_name'];
+
+            $sqlcheckclie = "SELECT * FROM `tbl_projects` WHERE `project_client` = '$client_name'";
+            $stmt = $conn->prepare($sqlcheckclie);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $sqlupdateproclie = "UPDATE `tbl_projects` SET `project_client`='$name' WHERE `project_client` = '$client_name'";
+                
+
+                $sqlcheckstdclient = "SELECT * FROM `tbl_student` WHERE `client_name` = '$client_name'";
+                $stmt = $conn->prepare($sqlcheckstdclient);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    $sqlupdatestdclient = "UPDATE `tbl_student` SET `client_name`='$name' WHERE `client_name` = '$client_name'";
+                    $stmt = $conn->prepare($sqlupdatestdclient);
+                    $stmt->execute();
+                }
+                $stmt = $conn->prepare($sqlupdateproclie);
+                $stmt->execute();
+            }
+
+            $sqlupdatecli = "UPDATE `tbl_client` SET `client_name`='$name', `client_email`='$useremail' WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlupdatecli);
+            $stmt->execute();
+         }else{
+            $sqlupdateadmin = "UPDATE `tbl_admin` SET `admin_name`='$name', `admin_email`='$useremail' WHERE user_id = '$uid'";
+            $stmt = $conn->prepare($sqlupdateadmin);
+            $stmt->execute();
+         }
+
     try {
         $conn->exec( $sqlupdate);
             echo "<script>alert('Success')</script>";
