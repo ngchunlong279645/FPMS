@@ -38,6 +38,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = $row['std_gender'];
     $race = $row['std_races'];
 	$course= $row['std_course'];
+    $lec_name= $row['lecturer_name'];
     $project_title = $row['project_title'];
 
 } else {
@@ -52,6 +53,7 @@ if ($select_stmt->rowCount() > 0) {
     $gender = "";
     $race = "";
 	$course = "";
+    $lec_name = "";
     $project_title = "";
 
 }
@@ -238,6 +240,7 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Gender:</strong> <?php echo $gender; ?></p>
         <p><strong>Race:</strong> <?php echo $race; ?></p>
 		<p><strong>Course:</strong> <?php echo $course; ?></p>
+        <p><strong>Lecturer:</strong> <?php echo $lec_name; ?></p>
         <a href="updateStdInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
         
       

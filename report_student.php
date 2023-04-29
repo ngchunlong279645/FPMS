@@ -11,8 +11,8 @@ if (!isset($_SESSION['session_id'])) {
 
 
 
-$sqlprojects = "SELECT * FROM tbl_projects";
-$stmt = $conn->prepare($sqlprojects);
+$sqlstudent = "SELECT * FROM tbl_student";
+$stmt = $conn->prepare($sqlstudent);
 $stmt->execute();
 $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
 $rows = $stmt->fetchAll();
@@ -157,7 +157,7 @@ $rows = $stmt->fetchAll();
     .table-container {
         width: 60%;
         height: 450px; 
-        margin-top: 10px;
+        margin-top: 20px;
         margin-right: 10px; /* Add margin to the right */
         border: 1px solid black;
     }
@@ -230,7 +230,7 @@ $rows = $stmt->fetchAll();
         <button class="active"><i class="fa fa-folder-open" style="color: black;"></i> Project</button>
     </a>
     <a href="report_student.php">
-        <button ><i class="fa fa-graduation-cap" style="color: black;"></i> Student</button>
+        <button class="active"><i class="fa fa-graduation-cap" style="color: black;"></i> Student</button>
     </a>
     
 
@@ -241,7 +241,7 @@ $rows = $stmt->fetchAll();
             <button class="back-button">Back</button>
         </a>
 
-		<div class="page-title">Project</div>
+		<div class="page-title">Student</div>
 		<div class="menu-bar">
             <button class="tablinks active" id="defaultOpen" onclick="openTab(event, 'overview-tab')">Overview</button>
             <button class="tablinks" onclick="openTab(event, 'registered-tab')">Registered</button>
@@ -263,32 +263,33 @@ $rows = $stmt->fetchAll();
         </div>
         <div class="menu-bar-line"></div>
         <div id="overview-tab" class="tabcontent">
-        <h3>Total number of projects: <?php echo count($rows); ?></h3>
-
+        <h3>Total number of students: <?php echo count($rows); ?></h3>
                     <div class="container">
-                    
                 <div class="table-container">
                     <div class="scrollable-table-container">
                         <table class="report-table">
                             <thead>
                                 <tr>
-                                    <th>Project ID</th>
-                                    <th>Project Title</th>
-                                    <th>Project Start Date</th>
-                                    <th>Project End Date</th>
+                                    <th>Student Matric</th>
                                     <th>Student Name</th>
-                                    <th>Client Name</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Gender</th>
+                                    <th>Races</th>
+                                    <th>Course</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($rows as $row): ?>
                                     <tr>
-                                        <td><?php echo $row["project_id"]; ?></td>
-                                        <td><?php echo $row["project_title"]; ?></td>
-                                        <td><?php echo $row["project_start"]; ?></td>
-                                        <td><?php echo $row["project_end"]; ?></td>
+                                        <td><?php echo $row["std_matric"]; ?></td>
                                         <td><?php echo $row["std_name"]; ?></td>
-                                        <td><?php echo $row["project_client"]; ?></td>
+                                        <td><?php echo $row["std_tel"]; ?></td>
+                                        <td><?php echo $row["std_email"]; ?></td>
+                                        <td><?php echo $row["std_gender"]; ?></td>
+                                        <td><?php echo $row["std_races"]; ?></td>
+                                        <td><?php echo $row["std_course"]; ?></td>
+
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -297,30 +298,30 @@ $rows = $stmt->fetchAll();
                 </div>
                 <div class="chart-container">
                     <?php
-                        $projects_with_std_name = 0;
-                        $projects_without_std_name = 0;
+                        $std_name_with_projects = 0;
+                        $std_name_without_projects = 0;
 
                         foreach ($rows as $row) {
-                            if (!empty($row["std_name"])) {
-                                $projects_with_std_name++;
+                            if (!empty($row["project_title"])) {
+                                $std_name_with_projects++;
                             } else {
-                                $projects_without_std_name++;
+                                $std_name_without_projects++;
                             }
                         }
                     ?>
 
-                    <canvas id="projectPieChart" width="250" height="230"></canvas>
-                    <canvas id="projectBarChart" width="250" height="230"></canvas>
+                    <canvas id="stdPieChart" width="250" height="230"></canvas>
+                    <canvas id="stdtBarChart" width="250" height="230"></canvas>
 
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                     <script>
-                        var ctxPie = document.getElementById('projectPieChart').getContext('2d');
-                        var projectPieChart = new Chart(ctxPie, {
+                        var ctxPie = document.getElementById('stdPieChart').getContext('2d');
+                        var stdPieChart = new Chart(ctxPie, {
                             type: 'pie',
                             data: {
-                                labels: ['Registered Project', 'Unregistered Project'],
+                                labels: ['Student With Project', 'Student Without Project'],
                                 datasets: [{
-                                    data: [<?php echo $projects_with_std_name; ?>, <?php echo $projects_without_std_name; ?>],
+                                    data: [<?php echo $std_name_with_projects; ?>, <?php echo $std_name_without_projects; ?>],
                                     backgroundColor: ['#36A2EB', '#FFCE56'],
                                     borderWidth: 1
                                 }]
@@ -333,14 +334,14 @@ $rows = $stmt->fetchAll();
                             }
                         });
 
-                        var ctxBar = document.getElementById('projectBarChart').getContext('2d');
-                        var projectBarChart = new Chart(ctxBar, {
+                        var ctxBar = document.getElementById('stdtBarChart').getContext('2d');
+                        var stdtBarChart = new Chart(ctxBar, {
                             type: 'bar',
                             data: {
-                                labels: ['Registered Project', 'Unregistered Project'],
+                                labels: ['Student With Project', 'Student Without Project'],
                                 datasets: [{
-                                    label: 'Number of Projects',
-                                    data: [<?php echo $projects_with_std_name; ?>, <?php echo $projects_without_std_name; ?>],
+                                    label: 'Number of Student With Project',
+                                    data: [<?php echo $std_name_with_projects; ?>, <?php echo $std_name_without_projects; ?>],
                                     backgroundColor: ['#36A2EB', '#FFCE56'],
                                     borderWidth: 1
                                 }]
@@ -372,25 +373,31 @@ $rows = $stmt->fetchAll();
                         <table class="report-table">
                             <thead>
                                 <tr>
-                                    <th>Project ID</th>
-                                    <th>Project Title</th>
-                                    <th>Project Start Date</th>
-                                    <th>Project End Date</th>
+                                    <th>Student Matric</th>
                                     <th>Student Name</th>
-                                    <th>Client Name</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Gender</th>
+                                    <th>Races</th>
+                                    <th>Course</th>
+                                    <th>Project Title</th>
+                                    <th>Client</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <tbody>
                                 <?php foreach ($rows as $row): ?>
-                                    <?php if (!empty($row["std_name"])): ?>
+                                    <?php if (!empty($row["project_title"])): ?>
                                         <tr>
-                                            <td><?php echo $row["project_id"]; ?></td>
-                                            <td><?php echo $row["project_title"]; ?></td>
-                                            <td><?php echo $row["project_start"]; ?></td>
-                                            <td><?php echo $row["project_end"]; ?></td>
-                                            <td><?php echo $row["std_name"]; ?></td>
-                                            <td><?php echo $row["project_client"]; ?></td>
+                                        <td><?php echo $row["std_matric"]; ?></td>
+                                        <td><?php echo $row["std_name"]; ?></td>
+                                        <td><?php echo $row["std_tel"]; ?></td>
+                                        <td><?php echo $row["std_email"]; ?></td>
+                                        <td><?php echo $row["std_gender"]; ?></td>
+                                        <td><?php echo $row["std_races"]; ?></td>
+                                        <td><?php echo $row["std_course"]; ?></td>
+                                        <td><?php echo $row["project_title"]; ?></td>
+                                        <td><?php echo $row["client_name"]; ?></td>
                                         </tr>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
@@ -408,23 +415,28 @@ $rows = $stmt->fetchAll();
                         <table class="report-table">
                             <thead>
                                 <tr>
-                                    <th>Project ID</th>
-                                    <th>Project Title</th>
-                                    <th>Project Start Date</th>
-                                    <th>Project End Date</th>
-                                    <th>Client Name</th>
+                                    <th>Student Matric</th>
+                                    <th>Student Name</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Gender</th>
+                                    <th>Races</th>
+                                    <th>Course</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <tbody>
                                 <?php foreach ($rows as $row): ?>
-                                    <?php if (empty($row["std_name"])): ?>
+                                    <?php if (empty($row["project_title"])): ?>
                                         <tr>
-                                            <td><?php echo $row["project_id"]; ?></td>
-                                            <td><?php echo $row["project_title"]; ?></td>
-                                            <td><?php echo $row["project_start"]; ?></td>
-                                            <td><?php echo $row["project_end"]; ?></td>
-                                            <td><?php echo $row["project_client"]; ?></td>
+                                            <td><?php echo $row["std_matric"]; ?></td>
+                                            <td><?php echo $row["std_name"]; ?></td>
+                                            <td><?php echo $row["std_tel"]; ?></td>
+                                            <td><?php echo $row["std_email"]; ?></td>
+                                            <td><?php echo $row["std_gender"]; ?></td>
+                                            <td><?php echo $row["std_races"]; ?></td>
+                                            <td><?php echo $row["std_course"]; ?></td>
+                                           
                                         </tr>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
