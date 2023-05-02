@@ -42,12 +42,10 @@ if ($rowcount > 0) {
         }
         if ($operation == 'search') {
             $search = $_GET['search'];
-            $option = $_GET['option'];
-            if ($option == "Select") {
-                $sqlprojects = "SELECT * FROM tbl_projects WHERE project_title LIKE '%$search%'";
+                $sqlprojects = "SELECT * FROM tbl_projects WHERE std_name = '' AND project_title LIKE '%$search%'";
             }
         } else {
-            $sqlprojects = "SELECT * FROM tbl_projects";
+            $sqlprojects = "SELECT * FROM tbl_projects WHERE std_name = ''";
         }
     }
 
@@ -60,7 +58,7 @@ if ($rowcount > 0) {
         $page_first_result = 0;
     }
 
-    $sqlprojects = "SELECT * FROM tbl_projects WHERE std_name = ''";
+    
     $stmt = $conn->prepare($sqlprojects);
     $stmt->execute();
     $number_of_result = $stmt->rowCount();
@@ -70,7 +68,7 @@ if ($rowcount > 0) {
     $stmt->execute();
     $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $rows = $stmt->fetchAll();
-}
+
 
 ?>
 

@@ -226,7 +226,7 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Race:</strong> <?php echo $race; ?></p>
         <p><strong>Office:</strong> <?php echo $office; ?></p>
         <a href="updateLecInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
-        <a href="lecturer.php?submit=delete&user_id=<?php echo $user_id?>" class="w3-button w3-red" >Delete Profile</a>
+        
       
       </div>
     <?php else: ?>

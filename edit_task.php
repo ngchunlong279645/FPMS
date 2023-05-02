@@ -13,8 +13,9 @@ if (isset($_POST['submit'])) {
     $task_id = $_POST['task_id']; 
     $task_name = addslashes($_POST['task_name']); 
     $due_date = addslashes($_POST['due_date']);
+    $grade = addslashes($_POST['grade']);
     $std_matric = addslashes($_POST['std_matric']);
-   $sqlupdate = "UPDATE `tbl_dashboard` SET `task_name`='$task_name',`due_date`='$due_date' WHERE task_id =  '$task_id'";
+    $sqlupdate = "UPDATE `tbl_dashboard` SET `task_name`='$task_name',`due_date`='$due_date',`grade`='$grade' WHERE task_id =  '$task_id'";
     try {
         $conn->exec($sqlupdate);
         echo "<script>alert('Success')</script>";
@@ -40,6 +41,7 @@ if (isset($_GET['submit'])) {
                 $task_id= $task['task_id'];
                 $task_name= $task['task_name'];
                 $due_date = $task['due_date'];
+                $grade = $task['grade'];
             }
         }else{
             echo "<script>alert('No task found')</script>";
@@ -72,8 +74,13 @@ if (isset($_GET['submit'])) {
             <label class="w3-text-blue"><b>Due Date</b></label>
             <input class="w3-input w3-border" type="date" name="due_date" value="<?php echo $due_date; ?>" required>
 
+            <label class="w3-text-blue"><b>Grade</b></label>
+            <input class="w3-input w3-border" type="text" name="grade" value="<?php echo $grade; ?>">
+
             <input type="hidden" name="std_matric" value="<?php echo $id ?>">
             <button class="w3-btn w3-blue w3-margin-top" type="submit" name="submit">Save Changes</button>
+
+            
         </form>
     </main>
 </body>

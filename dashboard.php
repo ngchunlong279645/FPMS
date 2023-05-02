@@ -222,7 +222,7 @@ $rows = $stmt->fetchAll();
                 $i = 0;
                 echo "<table class='w3-table w3-striped w3-bordered' style='width:100%'>
                     <tr><th style='width:5%'>No</th><th style='width:20%'>Task </th><th style='width:20%'>Due date</th><th style='width:30%'>Submission date</th><th style='width:10%'>Upload</th>
-                    <th style='width:10%'>Status</th>";
+                    <th style='width:10%'>Grade</th>";
                 if(substr($user_id, 0, 1) == "L") { 
                     echo "<th style='width:5%'>Operations</th>";
                 }
@@ -234,8 +234,8 @@ $rows = $stmt->fetchAll();
                     $due_date = $dashboard['due_date'];
                     $submission_date = $dashboard['submission_date'];
                     $upload = "<a href='#'>Upload</a>";
-                    $status = $dashboard['status'];
-                    echo "<tr><td>$i</td><td>$task_name</td><td>$due_date</td><td>$submission_date</td><td> $upload</td><td> $status</td>";
+                    $grade = $dashboard['grade'];
+                    echo "<tr><td>$i</td><td>$task_name</td><td>$due_date</td><td>$submission_date</td><td> $upload</td><td> $grade</td>";
                     if(substr($user_id, 0, 1) == "L") { 
                         echo "<td><button class='btn'><a href='dashboard.php?submit=delete&id=$id&task_id=$task_id' class='fa fa-trash' onclick=\"return confirm('Are you sure?')\"></a></button>
                         <button class='btn'><a href='edit_task.php?submit=details&id=$id&task_id=$task_id' class='fa fa-edit'></a></button></td>";
