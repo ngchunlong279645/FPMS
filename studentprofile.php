@@ -236,7 +236,7 @@ if ($select_stmt->rowCount() > 0) {
     <?php endif; ?>
   </div>
   <div class="profile-calendar">
-    <iframe src="https://calendar.google.com/calendar/embed?src=<?php echo $email?>&ctz=Asia%2FKuala_Lumpur"></iframe>
+    <iframe src="https://calendar.google.com/calendar/embed?"></iframe>
   <hr>
     </div>
 </div>

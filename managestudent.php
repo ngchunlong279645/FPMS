@@ -158,7 +158,12 @@ if (isset($_POST['submit'])) {
         }
         if ($operation == 'search') {
             $search = $_GET['search'];
-            $sqlstd = "SELECT * FROM tbl_student WHERE std_name LIKE '%$search%'";
+            if (substr($user_id, 0, 1) == "C") {
+                $sqlstd = "SELECT * FROM tbl_student WHERE std_name LIKE '%$search%' AND client_name ='$name'";
+            }else if (substr($user_id, 0, 1) == "L") {
+                $sqlstd = "SELECT * FROM tbl_student WHERE std_name LIKE '%$search%' AND lecturer_name ='$name'";
+            }
+           
         }
     }
 

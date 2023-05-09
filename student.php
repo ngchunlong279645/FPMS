@@ -240,7 +240,21 @@ if ($select_stmt->rowCount() > 0) {
         <p><strong>Gender:</strong> <?php echo $gender; ?></p>
         <p><strong>Race:</strong> <?php echo $race; ?></p>
 		<p><strong>Course:</strong> <?php echo $course; ?></p>
-        <p><strong>Lecturer:</strong> <?php echo $lec_name; ?></p>
+        <p><strong>Lecturer:</strong> 
+            <?php 
+            
+            $sqlgetuid = "SELECT `user_id` FROM `tbl_users` WHERE `username` = '$lec_name'";
+            $stmt = $conn->prepare($sqlgetuid);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $uid = $row['user_id'];
+
+            echo "<a href='userprofile.php?id={$uid}'>" . $lec_name . "</a>";
+            
+            }
+            ?></p>
+
         <a href="updateStdInfo.php?submit=details&user_id=<?php echo $user_id?>" class="w3-button w3-blue">Edit Profile</a>
         
       

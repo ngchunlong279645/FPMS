@@ -28,10 +28,13 @@ if (isset($_POST['submit'])) {
    try {
       $conn->exec($sqlinsertAdmininfo);
       if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
-        uploadImage($user_id);
-        echo "<script>alert('Success')</script>";
-        echo "<script>window.location.replace('admin.php')</script>";
-      }
+		uploadImage($user_id);
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
+	} else {
+		echo "<script>alert('Success')</script>";
+		echo "<script>window.location.replace('client.php')</script>";
+	}
   } catch (PDOException $e) {
   		echo "<script>alert('Failed')</script>";
      	echo "<script>window.location.replace('addAdminInfo.php')</script>";
