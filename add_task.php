@@ -14,8 +14,9 @@ if (isset($_POST['submit'])) {
     $task_name = addslashes($_POST['task_name']); 
     $due_date = addslashes($_POST['due_date']);
     $std_matric = addslashes($_POST['std_matric']);
-    $sqladdtask = "INSERT INTO `tbl_dashboard`(`task_id`, `task_name`, `due_date`, `std_id`) 
-    VALUES ('$task_id','$task_name','$due_date','$std_matric')";
+	$status = addslashes($_POST['status']);
+    $sqladdtask = "INSERT INTO `tbl_dashboard`(`task_id`, `task_name`, `due_date`, `std_id`,`status`) 
+    VALUES ('$task_id','$task_name','$due_date','$std_matric','$status')";
     
   
     try {
@@ -89,6 +90,8 @@ if (isset($_POST['submit'])) {
 				<input type="date" id="due_date" name="due_date"><br>
 
 				<input type="hidden" name="std_matric" value="<?php echo $id ?>">
+
+				<input type="hidden" name="status" value= 'Not Submitted'>
 
 				<input type="submit" name="submit" value="Submit">
 			</form>

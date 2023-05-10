@@ -79,9 +79,10 @@ $rows = $stmt->fetchAll();
 if (isset($_POST['submit'])) {
   $task_id = $_GET['task_id'];
   $now = date("Y-m-d H:i:s");
-  //$sql = "UPDATE tbl_dashboard SET submission_date = '$now'  WHERE task_id = '$task_id'";
+  $status = 'Submitted';
+  $sql = "UPDATE tbl_dashboard SET submission_date = '$now' , `status` = '$status' WHERE task_id = '$task_id'";
   try {
-    //$conn->exec( $sql);
+   $conn->exec( $sql);
     if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
       // Call the uploadImage function here
       saveUpload($task_id);
@@ -93,8 +94,8 @@ if (isset($_POST['submit'])) {
       echo "<script>window.location.replace('dashboard.php')</script>";
     }
   } catch (PDOException $e) {
-   echo "<script>alert('Failed to upload file.')</script>";
-   echo "<script>window.location.replace('dashboard.php')</script>";
+  echo "<script>alert('Failed to upload file.')</script>";
+  echo "<script>window.location.replace('dashboard.php')</script>";
   }
 }
 
