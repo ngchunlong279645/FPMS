@@ -91,7 +91,7 @@ if (isset($_POST['submit'])) {
 
 				<input type="hidden" name="std_matric" value="<?php echo $id ?>">
 
-				<input type="hidden" name="status" value= 'Not Submitted'>
+				<input type="hidden" name="status" value= 'No attempt'>
 
 				<input type="submit" name="submit" value="Submit">
 			</form>

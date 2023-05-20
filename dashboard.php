@@ -102,7 +102,9 @@ if (isset($_POST['submit'])) {
 
   if (isset($_POST['edit'])) {
     $task_id = $_POST['task_id'];
+    
     try {
+     
       if (file_exists($_FILES["fileToUpload"]["tmp_name"]) || is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])) {
         // Call the uploadImage function here
         saveUpload($task_id);
@@ -310,12 +312,101 @@ function saveUpload($task_id)
 }
 
 
-    .left-align-form {
-        text-align: left;
-    }
-    .left-align-form input[type="submit"] {
-        float: right;
-    }
+.left-align-form {
+    text-align: left;
+}
+.left-align-form input[type="submit"] {
+    float: right;
+}
+
+/* CSS for Progress Bar */
+.progress-bar-container {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 35px;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #4CAF50;
+  transition: width 0.3s ease-in-out;
+  border-radius: 15px;
+  z-index: 1;
+  animation: progressAnimation 2s ease-in-out forwards;
+}
+
+.progress-label {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-weight: bold;
+  color: black;
+  font-size: 14px;
+  z-index: 2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Gradient Background for Progress Bar */
+.progress-bar {
+  background-image: linear-gradient(to right, #4CAF50, #2ecc71);
+}
+
+/* Rounded Corners for Progress Bar Edges */
+.progress-bar-container::before,
+.progress-bar-container::after {
+  content: "";
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  top: 0;
+}
+
+.progress-bar-container::before {
+  left: -15px;
+  z-index: 2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar-container::after {
+  
+  z-index: 2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Striped Pattern for Progress Bar */
+.progress-bar-striped {
+  background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2) 4px, transparent 4px, transparent 8px);
+}
+
+/* Animated Striped Effect */
+.progress-bar-animated {
+  background-position: 0 -30px;
+  animation: progress-animation 1s linear infinite;
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: <?php echo $percentage_completed; ?>%;
+  }
+}
+
+
+
+
     
     
 
@@ -346,9 +437,34 @@ function saveUpload($task_id)
     
         ?>
         <section id="progress">
-            <h2>Progress Status</h2>
-            <p>Your current progress: 0%</p>
-        </section>
+        <h2>Progress Status </h2>
+        <?php
+        // Query to count the number of tasks the student has submitted
+        $sqlcountSubmit = "SELECT COUNT(*) AS total FROM tbl_dashboard WHERE std_id = $std_matric AND status = 'Submitted'";
+        $stmt = $conn->prepare($sqlcountSubmit);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $total_submitted = $row['total'];
+        // Query to count the total number of tasks for the student
+        $sqlcounttask = "SELECT COUNT(*) AS total FROM tbl_dashboard WHERE std_id = $std_matric";
+        $stmt = $conn->prepare($sqlcounttask);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $total_tasks = $row['total'];
+        // Calculate the percentage of completed tasks
+        if ($total_tasks > 0) {
+          $percentage_completed = round(($total_submitted / $total_tasks) * 100);
+        } else {
+          $percentage_completed = 0;
+        }
+        ?>
+        <div class="progress-bar-container">
+        <div class="progress-bar" style="width: <?php echo $percentage_completed; ?>%"></div>
+        <span class="progress-label"><?php echo $percentage_completed; ?>%</span>
+        
+      </div>
+      </section>
+
         <section id="tasks">
             <div class="w3-margin w3-border" style="overflow-x:auto;">
             <?php
@@ -388,18 +504,26 @@ function saveUpload($task_id)
                   }
                   
                   echo "<tr><td>$i</td><td>$task_name</td><td>$due_date</td><td>$submission_date</td>";
-                  if(substr($user_id, 0, 1) == "S") {               
-                  if ($has_file) {
-                    echo "<td>
-                            <a href='$file_path' target='_blank' class='view-btn w3-bar-item w3-button w3-right'>View</a>
-                            <a href='#' class='edit-btn w3-bar-item w3-button w3-right' data-taskid='$task_id'>Edit</a>
-                          </td>";
-                } else {
-                    echo "<td>
-                            <a href='#' class='add-btn w3-bar-item w3-button w3-right' data-taskid='$task_id'>Upload</a>
-                          </td>";
-                }
-              }
+                  if (substr($user_id, 0, 1) == "S") {
+                    if ($has_file) {
+                      if ($grade != '') {
+                        echo "<td>
+                                <a href='$file_path' target='_blank' class='view-btn w3-bar-item w3-button w3-right'>View</a>
+                                <span class='disabled-btn w3-bar-item w3-button w3-right'>Edit</span>
+                              </td>";
+                      } else {
+                        echo "<td>
+                                <a href='$file_path' target='_blank' class='view-btn w3-bar-item w3-button w3-right'>View</a>
+                                <a href='#' class='edit-btn w3-bar-item w3-button w3-right' data-taskid='$task_id'>Edit</a>
+                              </td>";
+                      }
+                    } else {
+                      echo "<td>
+                              <a href='#' class='add-btn w3-bar-item w3-button w3-right' data-taskid='$task_id'>Upload</a>
+                            </td>";
+                    }
+                  }
+                  
                 
                               
                   echo"<td> $status</td><td> $grade</td>";
@@ -460,6 +584,7 @@ const removeFileBtn = document.querySelector('#remove-file-btn');
 const closeEditPopupPage = document.querySelector('.close-edit-popup-page');
 const form = document.querySelector('.left-align-form');
 const fileInput = document.querySelector('#fileToUpload');
+const disabledEditBtns = document.querySelectorAll('.disabled-btn');
 
 addBtns.forEach(addBtn => {
   addBtn.addEventListener('click', function(event) {
@@ -489,6 +614,13 @@ editBtns.forEach(editBtn => {
 
 closeEditPopupPage.addEventListener('click', function() {
   editPopupPage.style.display = 'none';
+});
+
+disabledEditBtns.forEach(disabledEditBtn => {
+  disabledEditBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    alert('Cannot edit task with a grade');
+  });
 });
 
 $(document).ready(function() {

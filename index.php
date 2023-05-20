@@ -50,73 +50,103 @@ if (isset($_GET["status"])) {
     <title>Login</title>
     <style>
         body {
-            background-image: url("pic/wallpaperflare.com_wallpaper.jpg");
-            background-size: cover;
-            background-position: center;
-            font-family: Arial, sans-serif;
-            color: #fff;
-            text-align: center;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
+        background-image: url("pic/wallpaperflare.com_wallpaper.jpg");
+        background-size: cover;
+        background-position: center;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        text-align: center;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    form {
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 30px;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        max-width: 500px;
+        margin: 0 auto;
+        transform: translateY(-100px);
+        opacity: 0;
+        animation: slideIn 1s forwards;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-100px);
+            opacity: 0;
         }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            margin: 0 auto;
+        100% {
+            transform: translateY(0);
+            opacity: 1;
         }
-        form {
-            background-color: rgba(	128, 128, 128, 0.8);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-        input[type="text"], input[type="password"] {
-            border: none;
-            border-radius: 5px;
-            font-size: 24px;
-            padding: 10px;
-            width: 95%;
-            margin-bottom: 20px;
-        }
-        input[type="submit"] {
-            background-color: #0095ff;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 24px;
-            padding: 10px 20px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        input[type="submit"]:hover {
-            background-color: #0073e6;
-        }
-        .signup {
-            font-size: 24px;
+    }
+
+    h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #0095ff; /* Added cool color */
+    }
+
+    label {
+        display: block;
+        font-size: 24px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        border: none;
+        border-radius: 5px;
+        font-size: 24px;
+        padding: 10px;
+        width: 95%;
+        margin-bottom: 20px;
+        background-color: rgba(255, 255, 255, 0.7); /* Added translucent background */
+        color: #000; /* Added dark text color */
+    }
+
+    input[type="submit"] {
+        background-color: #0095ff;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 24px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #0073e6;
+    }
+
+    .signup {
+        font-size: 24px;
             color: #fff;
             text-decoration: none;
             margin-left: 10px;
             border-bottom: 2px solid #fff;
             padding-bottom: 5px;
+            transition: border-color 0.3s ease-in-out; /* Added transition effect */
         }
-        .signup:hover {
-            border-bottom-color: #0073e6;
-        }
+
+    .signup:hover {
+        border-bottom-color: #0073e6;
+    }
+
     </style>
 </head>
 

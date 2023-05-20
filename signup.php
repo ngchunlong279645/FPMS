@@ -55,7 +55,7 @@ function generateUserID($role) {
     <script src="../js/script.js"></script>
     <title>Welcome to FPMS</title>
   </head>
-  <body style="max-width:1200px;margin:0 auto;">
+  <body style="max-width:auto;margin:0 auto;">
     <header class="w3-header w3-blue w3-center w3-padding-32">
         <h3>Final Project Management System</h3>
     </header>
@@ -132,6 +132,6 @@ function generateUserID($role) {
       </form>
     </div>
     </div>
-    <div class="w3-center w3-bottom w3-blue" style="max-width:1200px;margin:0 auto;">FPMS</div>
+    <div class="w3-center w3-bottom w3-blue" style="max-width auto;margin:0 auto;">FPMS</div>
   </body>
 </html>

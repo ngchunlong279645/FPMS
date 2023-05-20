@@ -80,6 +80,75 @@ $stmt->execute();
 $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
 $rows = $stmt->fetchAll();
 
+require 'vendor/autoload.php';
+use HuggingFace\Transformers\Tokenizers\Tokenizer;
+use HuggingFace\Transformers\Trainer;
+use HuggingFace\Transformers\Model;
+use HuggingFace\Transformers\Tensor;
+
+// Specify the path to the pre-trained BERT model and tokenizer
+$modelPath = 'bert-base-uncased';
+$tokenizerPath = 'bert-base-uncased';
+
+// Load the tokenizer
+$tokenizer = new Tokenizer($tokenizerPath);
+
+// Load the model
+$model = new Model($modelPath);
+
+// Get the user's search query
+$searchQuery = $_GET['search'];
+
+// Tokenize the search query
+$tokens = $tokenizer->encode($searchQuery);
+$input = Tensor::fromArray([$tokens]);
+
+// Run the search query through the BERT model
+$output = $model->forward($input);
+$searchEmbedding = $output->pooler_output;
+
+// Convert the search embedding to an array
+$searchEmbeddingArray = $searchEmbedding->toArray()[0];
+// Retrieve all projects from the database
+$allProjects = $rows;
+
+// Define an array to store the relevance scores for each project
+$relevanceScores = [];
+
+// Calculate the relevance score for each project
+foreach ($allProjects as $project) {
+    // Tokenize and encode the project title
+    $projectTitle = $project['project_title'];
+    $projectTokens = $tokenizer->encode($projectTitle);
+    $projectInput = Tensor::fromArray([$projectTokens]);
+
+    // Run the project title through the BERT model
+    $projectOutput = $model->forward($projectInput);
+    $projectEmbedding = $projectOutput->pooler_output;
+
+    // Calculate the relevance score using cosine similarity
+    $score = cosineSimilarity($searchEmbeddingArray, $projectEmbedding->toArray()[0]);
+
+    // Store the relevance score for the project
+    $relevanceScores[$projectTitle] = $score;
+}
+
+// Sort the projects based on the relevance scores in descending order
+arsort($relevanceScores);
+
+// Get the sorted project titles
+$sortedProjects = array_keys($relevanceScores);
+
+// Display the sorted projects
+foreach ($sortedProjects as $projectTitle) {
+    // Retrieve the project details from the database using the project title
+    $projectDetails = getProjectDetails($projectTitle);
+
+    // Display the project details to the user
+    // ...
+}
+
+
 ?>
 
 <!DOCTYPE html>
